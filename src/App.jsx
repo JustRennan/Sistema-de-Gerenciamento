@@ -1,32 +1,38 @@
-import React, { useState } from 'react'; // Importação do... react
-import { BrowserRouter, Routes, Route } from 'react-router-dom'; // Importação do React Router
-import './App.css' // Importação do arquivo css padrão da página inicial
+import React, { useState } from 'react'; 
+import { BrowserRouter, Routes, Route } from 'react-router-dom'; 
+import './App.css';
+import dadosStore from './redux/store';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
-// Importação dos componentes de cada página, atualmente incompleto. Home é página inicial carregada por default
 import Home from './pages/Home';
 import Sobre from './pages/Sobre';
 import Cadastro from './pages/Cadastros';
 import Clientes from './pages/Clientes';
 import Estoque from './pages/Estoque';
 import Relatorios from './pages/Relatorios';
-import Teste from './pages/Teste';
+import Login from './pages/Login';
 
 // App
 
 export default function App() {
-  // Route path se refere ao link da página especifica, "/" sendo a página inicial
-  // Ja element se refere ao conteudo da página
+  let {store, persistor} = dadosStore();
+
   return ( 
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/sobre' element={<Sobre />} />
-        <Route path='/cadastro' element={<Cadastro />} />
-        <Route path='/vendas' element={<Relatorios />} />
-        <Route path='/estoque' element={<Estoque />} /> 
-        <Route path='/clientes' element={<Clientes />} />
-        <Route path='/teste' element={<Teste />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/sobre' element={<Sobre />} />
+            <Route path='/cadastro' element={<Cadastro />} />
+            <Route path='/vendas' element={<Relatorios />} />
+            <Route path='/estoque' element={<Estoque />} /> 
+            <Route path='/clientes' element={<Clientes />} />
+            <Route path='/login' element={<Login />} />
+          </Routes>
+        </BrowserRouter>
+      </PersistGate>
+    </Provider>
   );
 }

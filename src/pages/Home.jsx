@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderHome from './HeaderHome';
+import { useNavigate } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { definirToken } from '../redux/loginSlice';
 
 // Botões de Redireciomaneto
 
@@ -16,7 +19,17 @@ const Botoes = () => {
 
 // Componente principal que será exportado por defaut
 
-const Home = () => {
+const Home = ({ history }) => {
+  const token = useSelector((state) => state.token);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      console.log("Login")
+      return navigate("/login");
+    }
+  }, [token]);
+  
   return (
     <main>
       <HeaderHome />

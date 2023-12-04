@@ -4,6 +4,8 @@ import { Table, Button, Modal, Space, Select } from 'antd';
 import { EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import '../styles/relatorios.css';
+import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 // Boltão para voltar a página principal
 
@@ -17,7 +19,7 @@ const Bvoltar = () => {
 
 // Barra de pesquisa
 
-const PesquisaBarra = ({ pesquisaNome, pesquisaData, atualizaLista }) => {
+const PesquisaBarra = ({ pesquisaNome, pesquisaData, atualizaLista, config }) => {
   const [tipoPesquisa, setTipoPesquisa] = useState("nome");
   const [dataInicial, setDataInicial] = useState("");
   const [dataFinal, setDataFinal] = useState("");
@@ -121,7 +123,7 @@ const PesquisaBarra = ({ pesquisaNome, pesquisaData, atualizaLista }) => {
 
 // Tabela de Vendas
 
-const TableVendas = ({data, setData, atualizaLista}) => {
+const TableVendas = ({ data, setData, atualizaLista, config }) => {
   const [modalVisible, setModalVisible] = useState(false);  
   const [produtos, setProdutos] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -610,14 +612,6 @@ const TableVendas = ({data, setData, atualizaLista}) => {
   );
 };
 
-// Token
-
-const config = {
-  headers: {
-    'Authorization':'Bearer 3c5c61d8cd99722d135079ced010c929de179419a2d392d1935c3ef5df88a5e54c93717e0249f2d14d2ed738cc65970fac4eaea7a371367ac64eadd4dd1e56e4ba4451007466331d575468440ea6adfbea34793409070aba581f18496272cad6ee89d6bf9f1026de715eb54ab977f9f3b5d3baad9f94331e2c4444da6a5720f1'
-  }
-};
-
 // Componente principal
 
 const Relatorios = () => {
@@ -628,6 +622,26 @@ const Relatorios = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [deleteRecord, setDeleteRecord] = useState(null);
   const [detailsRecord, setDetailsRecord] = useState(null);
+  const token = useSelector((state) => state.token)
+
+  const config = {
+     headers: {
+       'Authorization': 'Bearer ' + token
+     }
+   };
+
+  // redirecionamento se não estiver logado
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      console.log("Login")
+      return navigate("/login");
+    }
+  }, [token]);
+
+  // receber tabela
 
   function atualizaLista() {
     axios.get(`https://backprojeto.pablorennan.repl.co/api/vendas?sort=data:desc&populate=*`, config)
@@ -735,10 +749,10 @@ const Relatorios = () => {
       <Bvoltar />
 
       {/* Barra de pesquisa */}
-      <PesquisaBarra atualizaLista={atualizaLista} pesquisaNome={pesquisaNome} pesquisaData={pesquisaData} />
+      <PesquisaBarra atualizaLista={atualizaLista} pesquisaNome={pesquisaNome} pesquisaData={pesquisaData} config={config} />
 
       {/* Tabela de vendas */}
-      <TableVendas atualizaLista={atualizaLista} data={data} setData={setData} />
+      <TableVendas atualizaLista={atualizaLista} data={data} setData={setData} config={config} />
 
       {/* Modal de Edição */}
       <Modal

@@ -3,8 +3,10 @@ import '../styles/estoque.css';
 import Header from './Header.jsx';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
-import { Table, Button, Modal, Form, Input, Space } from 'antd';
+import { Table, Button, Modal, Form, Input, Space, Select } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 
 // Botão de Voltar para Mobile
@@ -19,7 +21,7 @@ const Bvoltar = () => {
 
 // Formulário de input
 
-const InputForm = ({ onAdicionar }) => {
+const InputForm = ({ onAdicionar, config }) => {
   const { control, handleSubmit, reset } = useForm();
   const [modalVisivel, setModalVisivel] = useState(false);
   const [opcoesCategoria, setOpcoesCategoria] = useState([]);
@@ -153,6 +155,7 @@ const InputForm = ({ onAdicionar }) => {
       <CategoriaModal
         visible={modalVisivel}
         onClose={() => setModalVisivel(false)}
+        config={config}
       />
     </div>
   );
@@ -160,7 +163,7 @@ const InputForm = ({ onAdicionar }) => {
 
 // Modal para Categoria
 
-const CategoriaModal = ({ visible, onClose }) => {
+const CategoriaModal = ({ visible, onClose, config }) => {
   const [categorias, setCategorias] = useState([]);
   const [novaCategoria, setNovaCategoria] = useState('');
 
@@ -317,7 +320,7 @@ const CategoriaModal = ({ visible, onClose }) => {
 
 // Modal de Edição de Produtos
 
-const EditarProdutoModal = ({ produto, visible, onCancel, onSave }) => {
+const EditarProdutoModal = ({ produto, visible, onCancel, onSave, config }) => {
   const [form] = Form.useForm();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [opcoesCategoria, setOpcoesCategoria] = useState([]);
@@ -378,15 +381,14 @@ const EditarProdutoModal = ({ produto, visible, onCancel, onSave }) => {
           rules={[{ required: false, message: 'Por favor, insira a categoria do produto!' }]
         }
         >
-          <select
-            value={selectedCategory}
+          <Select
+            defaultValue={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
-            <option value="">Selecionar</option>
             { opcoesCategoria.map( item => (
               <option value={item.value}>{item.label}</option>
             ) )}
-          </select>
+          </Select>
         </Form.Item>
         <Form.Item
           name="preco"
@@ -498,14 +500,6 @@ const ListaProdutos = ({ produtos, onEditarProduto, onExcluirProduto }) => {
   return <Table columns={columns} dataSource={produtos} />;
 };
 
-// Token
-
-const config = {
-  headers: {
-    'Authorization':'Bearer 3c5c61d8cd99722d135079ced010c929de179419a2d392d1935c3ef5df88a5e54c93717e0249f2d14d2ed738cc65970fac4eaea7a371367ac64eadd4dd1e56e4ba4451007466331d575468440ea6adfbea34793409070aba581f18496272cad6ee89d6bf9f1026de715eb54ab977f9f3b5d3baad9f94331e2c4444da6a5720f1'
-  }
-};
-
 ////// Componente Final
 
 const Estoque = () => {
@@ -520,7 +514,31 @@ const Estoque = () => {
   const [editarModalVisivel, setEditarModalVisivel] = useState(false);
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
+  const token = useSelector((state) => state.token)
 
+  const config = {
+     headers: {
+       'Authorization': 'Bearer ' + token
+     }
+   };  
+
+  useEffect(() => {    
+    atualizaLista();
+  }, []);
+
+  // redirecionamento se não estiver logado
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      console.log("Login")
+      return navigate("/login");
+    }
+  }, [token]);
+
+  ////
+  
   useEffect(() => {
     atualizaLista();
   }, []);
@@ -707,6 +725,7 @@ const Estoque = () => {
           onTelefoneChange={(e) => setTelefone(e.target.value)}
           onEnderecoChange={(e) => setEndereco(e.target.value)}
           onAdicionar={adicionarProduto}
+          config={config}
         />
         <BarraPesquisa
           pesquisaNome={pesquisaNome}
@@ -722,6 +741,7 @@ const Estoque = () => {
           produto={produtos[produtoEditando]}
           visible={editarModalVisivel}
           onCancel={() => setEditarModalVisivel(false)}
+          config={config}
           onSave={(produtoEditado) => {
             editarProduto(produtoEditado, produtoEditando);
             setEditarModalVisivel(false);

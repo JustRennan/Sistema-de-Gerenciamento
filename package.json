@@ -13,12 +13,15 @@
   "license": "ISC",
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@reduxjs/toolkit": "^2.0.1",
     "antd": "^5.9.4",
     "axios": "^1.5.1",
     "react-form-hook": "^0.0.1",
     "react-hook-form": "^7.47.0",
     "react-javascript": "file:",
-    "react-router-dom": "^6.15.0"
+    "react-redux": "^9.0.0",
+    "react-router-dom": "^6.15.0",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

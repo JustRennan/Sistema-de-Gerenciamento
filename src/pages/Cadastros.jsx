@@ -4,6 +4,8 @@ import '../styles/cadastro.css';
 import Header from './Header.jsx';
 import { Modal, Form, Select, Table, Button } from 'antd';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 // Botão Voltar para Mobile 
 
@@ -32,7 +34,7 @@ const MensagSucess = () => {
 
 // Modal
 
-const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, venda, hideModal }) => {
+const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, venda, hideModal, config }) => {
   const [form] = Form.useForm();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [precoVenda, setPrecoVenda] = useState("");
@@ -374,14 +376,6 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
   );
 };
 
-// Token
-
-const config = {
-  headers: {
-    'Authorization':'Bearer 3c5c61d8cd99722d135079ced010c929de179419a2d392d1935c3ef5df88a5e54c93717e0249f2d14d2ed738cc65970fac4eaea7a371367ac64eadd4dd1e56e4ba4451007466331d575468440ea6adfbea34793409070aba581f18496272cad6ee89d6bf9f1026de715eb54ab977f9f3b5d3baad9f94331e2c4444da6a5720f1'
-  }
-};
-
 // Componente Principal
 
 const Cadastro = () => {
@@ -390,6 +384,24 @@ const Cadastro = () => {
   const [opcoesProdutos, setOpcoesProdutos] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [vendaId, setVendaId] = useState(null);
+  const token = useSelector((state) => state.token)
+
+  const config = {
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  };
+
+  // redirecionamento se não estiver logado
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      console.log("Login")
+      return navigate("/login");
+    }
+  }, [token]);
 
   const onSubmit = (data) => {
     // console.log(data);
@@ -603,6 +615,7 @@ const Cadastro = () => {
         control={control}
         venda={vendaId}
         hideModal={hideModal}
+        config={config}
       />
     </div>
   );

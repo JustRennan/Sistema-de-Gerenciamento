@@ -1,8 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 // A página
 
 const Sobre = () => {
+  const token = useSelector((state) => state.token)
+
+  const config = {
+     headers: {
+       'Authorization': 'Bearer ' + token
+     }
+   };
+
+  // redirecionamento se não estiver logado
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      console.log("Login")
+      return navigate("/login");
+    }
+  }, [token]);
+  
   useEffect(() => {
     import('../styles/sobre.css').then(() => {
       console.log('CSS para Sobr importado com sucesso.');

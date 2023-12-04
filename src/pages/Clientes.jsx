@@ -4,6 +4,8 @@ import Header from './Header.jsx';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { Table, Button, Modal, Form, Input } from 'antd';
+import { useSelector } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 
 
 // Botão de Voltar para Mobile
@@ -202,14 +204,6 @@ const ListaClientes = ({ clientes, onEditarCliente, onExcluirCliente }) => {
   return <Table columns={columns} dataSource={clientes} />;
 };
 
-// Token
-
-const config = {
-  headers: {
-    'Authorization':'Bearer 3c5c61d8cd99722d135079ced010c929de179419a2d392d1935c3ef5df88a5e54c93717e0249f2d14d2ed738cc65970fac4eaea7a371367ac64eadd4dd1e56e4ba4451007466331d575468440ea6adfbea34793409070aba581f18496272cad6ee89d6bf9f1026de715eb54ab977f9f3b5d3baad9f94331e2c4444da6a5720f1'
-  }
-};
-
 ////// Componente Final
 
 const Clientes = () => {
@@ -223,7 +217,31 @@ const Clientes = () => {
   const [clienteEditando, setClienteEditando] = useState(null);
   const [editarModalVisivel, setEditarModalVisivel] = useState(false);
   const [clientesFiltrados, setClientesFiltrados] = useState([]);
+  const token = useSelector((state) => state.token)
 
+  const config = {
+     headers: {
+       'Authorization': 'Bearer ' + token
+     }
+   };  
+
+  useEffect(() => {    
+    atualizaLista();
+  }, []);
+
+  // redirecionamento se não estiver logado
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      console.log("Login")
+      return navigate("/login");
+    }
+  }, [token]);
+
+  ////
+  
   useEffect(() => {
     atualizaLista();
   }, []);
