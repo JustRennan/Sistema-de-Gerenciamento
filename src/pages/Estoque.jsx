@@ -24,7 +24,7 @@ const Bvoltar = () => {
 const InputForm = ({ onAdicionar, config }) => {
   const { control, handleSubmit, reset } = useForm();
   const [modalVisivel, setModalVisivel] = useState(false);
-  const [opcoesCategoria, setOpcoesCategoria] = useState([]);
+  const [opcoesCategoria, setOpcoesCategoria] = useState([]); // Keep only one declaration
 
   useEffect(() => {
     axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', config)
@@ -51,7 +51,6 @@ const InputForm = ({ onAdicionar, config }) => {
   const onSubmit = (data) => {
     onAdicionar(data);
     reset();
-
   };
 
   const abrirModalCategoria = () => {
@@ -163,7 +162,7 @@ const InputForm = ({ onAdicionar, config }) => {
 
 // Modal para Categoria
 
-const CategoriaModal = ({ visible, onClose, config }) => {
+const CategoriaModal = ({ visible, onClose, config, opcoesCategoria, setOpcoesCategoria }) => {
   const [categorias, setCategorias] = useState([]);
   const [novaCategoria, setNovaCategoria] = useState('');
 
@@ -514,6 +513,7 @@ const Estoque = () => {
   const [editarModalVisivel, setEditarModalVisivel] = useState(false);
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
+  
   const token = useSelector((state) => state.token)
 
   const config = {

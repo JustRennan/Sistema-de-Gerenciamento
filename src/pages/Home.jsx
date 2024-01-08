@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import HeaderHome from './HeaderHome';
 import { useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';

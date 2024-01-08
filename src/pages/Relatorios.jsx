@@ -371,9 +371,9 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
               onChange={(value) => (record.cliente = value)}
             >
               {opcoesClientes.map((cliente) => (
-                <Option key={cliente.value} value={cliente.value}>
+                <Select.Option key={cliente.value} value={cliente.value}>
                   {cliente.label}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
           </div>
@@ -446,9 +446,9 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
                   onChange={(value) => (produto.produto = value)}
                 >
                   {opcoesProdutos.map((produtoOpcao) => (
-                    <Option key={produtoOpcao.value} value={produtoOpcao.value}>
+                    <Select.Option key={produtoOpcao.value} value={produtoOpcao.value}>
                       {produtoOpcao.label}
-                    </Option>
+                    </Select.Option>
                   ))}
                 </Select>
               </div>
