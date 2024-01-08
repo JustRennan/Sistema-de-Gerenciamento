@@ -30,7 +30,7 @@ const PesquisaBarra = ({ pesquisaNome, pesquisaData, atualizaLista, config }) =>
 
   useEffect(() => {
     // Get para opção de Clientes
-    axios.get('https://backprojeto.pablorennan.repl.co/api/clientes', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosClientes = response.data.data;
@@ -136,7 +136,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
     atualizaLista();
 
     // Get para opções de Clientes
-    axios.get('https://backprojeto.pablorennan.repl.co/api/clientes', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosClientes = response.data.data;
@@ -157,7 +157,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       });
 
     // Get para Opções de Produtos
-    axios.get('https://backprojeto.pablorennan.repl.co/api/produtos', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosProdutos = response.data.data;
@@ -184,7 +184,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   const obterProdutos = (vendaId) => {
     return new Promise((resolve, reject) => {
       axios
-        .get(`https://backprojeto.pablorennan.repl.co/api/item-vendas?filters[venda][id][$eq]=${vendaId}&populate=*`, config)
+        .get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-vendas?filters[venda][id][$eq]=${vendaId}&populate=*`, config)
         .then((response) => {
           if (response.status === 200) {
             const dadosProdutos = response.data.data;
@@ -235,7 +235,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       camposEditados.desconto = vendaEditada.desconto;
     }
 
-    axios.put(`https://backprojeto.pablorennan.repl.co/api/vendas/${vendaEditada.key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas/${vendaEditada.key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           console.log("VENDA EDITADA. Status: ", response.status);
@@ -267,7 +267,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       camposEditados.preco_venda = itemEditado.preco_venda;
     }
 
-    axios.put(`https://backprojeto.pablorennan.repl.co/api/item-vendas/${itemEditado.key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-vendas/${itemEditado.key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           console.log("Item editado com sucesso:, ", itemEditado.key);
@@ -284,7 +284,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   // Excluir Venda
 
   const excluirVenda = (vendaId) => {
-    axios.delete(`https://backprojeto.pablorennan.repl.co/api/vendas/${vendaId}`, config)
+    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas/${vendaId}`, config)
       .then((response) => {
         atualizaLista();
       })
@@ -294,7 +294,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   };
 
   const excluirProduto = (produtoId) => {
-    axios.delete(`https://backprojeto.pablorennan.repl.co/api/item-vendas/${produtoId}`, config)
+    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-vendas/${produtoId}`, config)
     .then((response) => {
       console.log("Produto excluido: ", produtoId);
     })
@@ -644,7 +644,7 @@ const Relatorios = () => {
   // receber tabela
 
   function atualizaLista() {
-    axios.get(`https://backprojeto.pablorennan.repl.co/api/vendas?sort=data:desc&populate=*`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas?sort=data:desc&populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const dados = response.data.data;
@@ -689,7 +689,7 @@ const Relatorios = () => {
   };
 
   const pesquisaNome = (clienteId) => {
-    axios.get(`https://backprojeto.pablorennan.repl.co/api/vendas?sort=data:desc&filters[cliente][id][$eq]=${clienteId}&populate=*`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas?sort=data:desc&filters[cliente][id][$eq]=${clienteId}&populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const dados = response.data.data;
@@ -715,7 +715,7 @@ const Relatorios = () => {
   }
 
   const pesquisaData = (dataInicio, dataFim) => {
-    axios.get(`https://backprojeto.pablorennan.repl.co/api/vendas?sort=data:desc&filters[data][$gte]=${dataInicio}&filters[data][$lte]=${dataFim}&populate=*`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas?sort=data:desc&filters[data][$gte]=${dataInicio}&filters[data][$lte]=${dataFim}&populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const dados = response.data.data;

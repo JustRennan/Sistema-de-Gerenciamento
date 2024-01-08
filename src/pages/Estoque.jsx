@@ -27,7 +27,7 @@ const InputForm = ({ onAdicionar, config }) => {
   const [opcoesCategoria, setOpcoesCategoria] = useState([]);
 
   useEffect(() => {
-    axios.get('https://backprojeto.pablorennan.repl.co/api/categorias', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosCategoria = response.data.data;
@@ -173,7 +173,7 @@ const CategoriaModal = ({ visible, onClose, config }) => {
 
   const obterCategorias = () => {
     // Fazer uma chamada GET à API para buscar as categorias
-    axios.get('https://backprojeto.pablorennan.repl.co/api/categorias', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosCategoria = response.data.data;
@@ -203,7 +203,7 @@ const CategoriaModal = ({ visible, onClose, config }) => {
         },
       };
 
-      axios.post('https://backprojeto.pablorennan.repl.co/api/categorias', novaCategoriaData, config)
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', novaCategoriaData, config)
         .then((response) => {
           if (response.status === 200) {
             obterCategorias();
@@ -223,7 +223,7 @@ const CategoriaModal = ({ visible, onClose, config }) => {
     console.log(categoriaId);
 
     // Fazer uma chamada à API para verificar se existem produtos relacionados
-    axios.get(`https://backprojeto.pablorennan.repl.co/api/categorias/${categoriaId}/?populate=produtos`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias/${categoriaId}/?populate=produtos`, config)
       .then((response) => {
         if (response.status === 200) {
           const produtosRelacionados = response.data.data.attributes.produtos.data;
@@ -249,7 +249,7 @@ const CategoriaModal = ({ visible, onClose, config }) => {
   const confirmarExclusaoCategoria = (categoria) => {
     const confirmarExclusao = window.confirm(`Tem certeza de que deseja excluir a categoria: ${categoria.nome}?`);
     if (confirmarExclusao) {
-      axios.delete(`https://backprojeto.pablorennan.repl.co/api/categorias/${categoria.key}`, config)
+      axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias/${categoria.key}`, config)
         .then((response) => {
           if (response.status === 200) {
             obterCategorias();
@@ -326,7 +326,7 @@ const EditarProdutoModal = ({ produto, visible, onCancel, onSave, config }) => {
   const [opcoesCategoria, setOpcoesCategoria] = useState([]);
 
   useEffect(() => {
-    axios.get('https://backprojeto.pablorennan.repl.co/api/categorias', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosCategoria = response.data.data;
@@ -546,7 +546,7 @@ const Estoque = () => {
   // Atualiza a tabela caso um comando seja executado
 
   function atualizaLista() {
-    axios.get('https://backprojeto.pablorennan.repl.co/api/produtos?populate=*', config)
+    axios.get('https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos?populate=*', config)
       .then((response) => {
         if (response.status == 200) {
           const dados = response.data.data;
@@ -598,7 +598,7 @@ const Estoque = () => {
         },
       };
 
-      axios.post('https://backprojeto.pablorennan.repl.co/api/produtos', novoProduto, config)
+      axios.post('https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos', novoProduto, config)
         .then((response) => {
           if (response.status === 200) {
             atualizaLista();
@@ -639,7 +639,7 @@ const Estoque = () => {
       camposEditados.custo = produtoEditado.custo;
     }
 
-    axios.put(`https://backprojeto.pablorennan.repl.co/api/produtos/${novosProdutos[produtoEditando].key}`, { data: camposEditados }, config)
+    axios.put(`https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${novosProdutos[produtoEditando].key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           setProdutos(novosProdutos);
@@ -660,7 +660,7 @@ const Estoque = () => {
     console.log(produtoId);
 
     // Fazer uma chamada à API para verificar se existem item vendas relacionados ao produto
-    axios.get(`https://backprojeto.pablorennan.repl.co/api/produtos/${produtoId}/?populate=*`, config)
+    axios.get(`https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}/?populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const produtoExcluidoNome = response.data.data.attributes.descricao;
@@ -687,7 +687,7 @@ const Estoque = () => {
   const confirmarExclusaoProduto = (produtoId, produtoExcluidoNome) => {
     const confirmarExclusao = window.confirm(`Tem certeza de que deseja excluir o produto: ${produtoExcluidoNome}?`);
     if (confirmarExclusao) {
-      axios.delete(`https://backprojeto.pablorennan.repl.co/api/produtos/${produtoId}`, config)
+      axios.delete(`https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}`, config)
         .then((response) => {
           if (response.status === 200) {
               atualizaLista();
