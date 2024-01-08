@@ -546,7 +546,7 @@ const Estoque = () => {
   // Atualiza a tabela caso um comando seja executado
 
   function atualizaLista() {
-    axios.get('https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos?populate=*', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos?populate=*', config)
       .then((response) => {
         if (response.status == 200) {
           const dados = response.data.data;
@@ -598,7 +598,7 @@ const Estoque = () => {
         },
       };
 
-      axios.post('https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos', novoProduto, config)
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos', novoProduto, config)
         .then((response) => {
           if (response.status === 200) {
             atualizaLista();
@@ -639,7 +639,7 @@ const Estoque = () => {
       camposEditados.custo = produtoEditado.custo;
     }
 
-    axios.put(`https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${novosProdutos[produtoEditando].key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${novosProdutos[produtoEditando].key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           setProdutos(novosProdutos);
@@ -660,7 +660,7 @@ const Estoque = () => {
     console.log(produtoId);
 
     // Fazer uma chamada à API para verificar se existem item vendas relacionados ao produto
-    axios.get(`https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}/?populate=*`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}/?populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const produtoExcluidoNome = response.data.data.attributes.descricao;
@@ -687,7 +687,7 @@ const Estoque = () => {
   const confirmarExclusaoProduto = (produtoId, produtoExcluidoNome) => {
     const confirmarExclusao = window.confirm(`Tem certeza de que deseja excluir o produto: ${produtoExcluidoNome}?`);
     if (confirmarExclusao) {
-      axios.delete(`https://https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}`, config)
+      axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}`, config)
         .then((response) => {
           if (response.status === 200) {
               atualizaLista();

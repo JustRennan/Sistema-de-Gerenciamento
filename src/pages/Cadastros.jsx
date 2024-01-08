@@ -25,7 +25,7 @@ const MensagSucess = () => {
       <div id="success-message" style={{ display: 'none' }}>
         Venda cadastrada com sucesso!
       </div>
-      <a id="relatorios-link" href="cadastro">
+      <a id="relatorios-link" href="vendas">
         Ir para Relatórios
       </a>
     </div>
@@ -57,7 +57,7 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
 
   // Atualiza a Tabela do Modal
   const atualizarTabelaItems = (vendaID) => {    
-    axios.get(`https://backprojeto.pablorennan.repl.co/api/item-vendas?filters[venda][id][$eq]=${vendaID}&populate=*`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda?filters[venda][id][$eq]=${vendaID}&populate=*`, config)
     .then((response) => {
       if (response.status === 200) {
         const dadosItemVenda = response.data.data;
@@ -128,7 +128,7 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
         },
       };
 
-      axios.post('https://backprojeto.pablorennan.repl.co/api/item-vendas', novoItem, config)
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda', novoItem, config)
         .then((response) => {
           if (response.status === 200) {
             console.log("Item da Venda Cadastrada com Sucesso!");
@@ -144,7 +144,7 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
 
   // Requisição Delete para ItemVenda
   const handleRemoverProduto = (itemvenda) => {
-    axios.delete(`https://backprojeto.pablorennan.repl.co/api/item-vendas/${itemvenda.key}`, config)
+    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda/${itemvenda.key}`, config)
     .then((response) => {
       if (response.status === 200) {
         atualizarTabelaItems(venda);
@@ -183,7 +183,7 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
   // Retorna o id do produto ap artir do id do Itemvenda
   const procurarIdProduto = async (itemvendaId) => {
     try {
-      const response = await axios.get(`https://backprojeto.pablorennan.repl.co/api/produtos?filters[item-venda][id][$eq]=${itemvendaId}&populate=*`, config);
+      const response = await axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos?filters[item-venda][id][$eq]=${itemvendaId}&populate=*`, config);
 
       if (response.status === 200) {
         const dadosProdutoProcurado = response.data.data;
@@ -225,7 +225,7 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
           if (novaQuantidade) {
             camposEditados.quantidadeloja = novaQuantidade;
           }
-          axios.put(`https://backprojeto.pablorennan.repl.co/api/produtos/${produtoId}`, { data: camposEditados }, config)
+          axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}`, { data: camposEditados }, config)
           .then((response) => {
             if (response.status === 200) {
               console.log("Estoque atualizado com sucesso!");
@@ -421,7 +421,7 @@ const Cadastro = () => {
         },
       };
 
-      axios.post('https://backprojeto.pablorennan.repl.co/api/vendas', novaVenda, config)
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas', novaVenda, config)
         .then((response) => {
           if (response.status === 200) {
             console.log("Venda Cadastrada com Sucesso!");
@@ -439,7 +439,7 @@ const Cadastro = () => {
 
   useEffect(() => {
     // Get para opção de Clientes
-    axios.get('https://backprojeto.pablorennan.repl.co/api/clientes', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosClientes = response.data.data;
@@ -460,7 +460,7 @@ const Cadastro = () => {
       });
 
     // Get para Produtos
-    axios.get('https://backprojeto.pablorennan.repl.co/api/produtos', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosProdutos = response.data.data;
@@ -495,7 +495,7 @@ const Cadastro = () => {
   const handleCancel = () => {
     if (vendaId) {
       axios
-        .delete(`https://backprojeto.pablorennan.repl.co/api/vendas/${vendaId}`, config)
+        .delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas/${vendaId}`, config)
         .then((response) => {
           if (response.status === 200) {
             setIsModalVisible(false);

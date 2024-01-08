@@ -184,7 +184,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   const obterProdutos = (vendaId) => {
     return new Promise((resolve, reject) => {
       axios
-        .get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-vendas?filters[venda][id][$eq]=${vendaId}&populate=*`, config)
+        .get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-venda?filters[venda][id][$eq]=${vendaId}&populate=*`, config)
         .then((response) => {
           if (response.status === 200) {
             const dadosProdutos = response.data.data;
@@ -267,7 +267,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       camposEditados.preco_venda = itemEditado.preco_venda;
     }
 
-    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-vendas/${itemEditado.key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-venda/${itemEditado.key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           console.log("Item editado com sucesso:, ", itemEditado.key);
@@ -294,7 +294,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   };
 
   const excluirProduto = (produtoId) => {
-    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-vendas/${produtoId}`, config)
+    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-venda/${produtoId}`, config)
     .then((response) => {
       console.log("Produto excluido: ", produtoId);
     })
