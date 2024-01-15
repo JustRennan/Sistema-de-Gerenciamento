@@ -267,7 +267,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       camposEditados.preco_venda = itemEditado.preco_venda;
     }
 
-    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-venda/${itemEditado.key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda/${itemEditado.key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           console.log("Item editado com sucesso:, ", itemEditado.key);
@@ -294,7 +294,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   };
 
   const excluirProduto = (produtoId) => {
-    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-venda/${produtoId}`, config)
+    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda/${produtoId}`, config)
     .then((response) => {
       console.log("Produto excluido: ", produtoId);
     })
@@ -394,7 +394,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
             <Select
               id="editPagamento"
               style={{
-                marginLeft: '30px',
+                marginLeft: '23px',
               }}
               defaultValue={record.pagamento}
               onChange={(value) => (record.pagamento = value)}
@@ -405,28 +405,22 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
               <Select.Option value="Dinheiro">Dinheiro</Select.Option>
             </Select>
           </div>
-          <div>
-            <label htmlFor="editEntrega">Valor de Entrega (R$):</label>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <label htmlFor="editEntrega" style={{ marginRight: '10px' }}>Valor da Entrega (R$):</label>
             <input
               type="number"
               step="0.01"
               id="editEntrega"
-              style={{
-                marginLeft: '20px',
-              }}
               defaultValue={record.entrega}
               onChange={(e) => (record.entrega = parseFloat(e.target.value))}
             />
           </div>
-          <div>
-            <label htmlFor="editDesconto">Valor de Desconto (R$):</label>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <label htmlFor="editDesconto" style={{ marginRight: '10px' }}>Valor do Desconto (R$):</label>
             <input
               type="number"
               step="0.01"
               id="editDesconto"
-              style={{
-                marginLeft: '10px',
-              }}
               defaultValue={record.desconto}
               onChange={(e) => (record.desconto = parseFloat(e.target.value))}
             />
@@ -452,28 +446,23 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
                   ))}
                 </Select>
               </div>
-              <div>
-                <label htmlFor={`editCustoVenda${index}`}>Preço do Cliente (R$):</label>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <label htmlFor={`editCustoVenda${index}`} style={{ marginRight: '12px' }}>Preço do Cliente (R$):</label>
                 <input
                   type="number"
                   step="0.01"
                   id={`editCustoVenda${index}`}
-                  style={{
-                    marginLeft: '20px',
-                  }}
                   defaultValue={produto.preco_venda}
                   onChange={(e) => (produto.preco_venda = parseFloat(e.target.value))}
                 />
               </div>
-              <div>
-                <label htmlFor={`editPrecoVenda${index}`}>Custo do Vendedor (R$):</label>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <label htmlFor={`editPrecoVenda${index}`} style={{ marginRight: '12px' }}>Custo do Vendedor (R$):</label>
                 <input
                   type="number"
                   step="0.01"
                   id={`editPrecoVenda${index}`}
-                  style={{
-                    marginLeft: '3px',
-                  }}
+                  style={{ marginLeft: '-2px' }}
                   defaultValue={produto.custo_venda}
                   onChange={(e) => (produto.custo_venda = parseFloat(e.target.value))}
                 />
@@ -483,9 +472,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
                 <input
                   type="number"
                   id={`editQuantidadeVendida${index}`}
-                  style={{
-                    marginLeft: '25.5px',
-                  }}
+                  style={{ marginLeft: '10px' }}
                   defaultValue={produto.quantidade_vendida}
                   onChange={(e) => (produto.quantidade_vendida = parseInt(e.target.value))}
                 />
