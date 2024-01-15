@@ -184,7 +184,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   const obterProdutos = (vendaId) => {
     return new Promise((resolve, reject) => {
       axios
-        .get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-item-venda?filters[venda][id][$eq]=${vendaId}&populate=*`, config)
+        .get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda?filters[venda][id][$eq]=${vendaId}&populate=*`, config)
         .then((response) => {
           if (response.status === 200) {
             const dadosProdutos = response.data.data;
