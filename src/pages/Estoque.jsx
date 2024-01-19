@@ -13,10 +13,10 @@ import { useNavigate } from "react-router-dom";
 
 const Bvoltar = () => {
   return (
-    <a className="bvoltar" href="/">
-      <i className="fas fa-arrow-left"></i>🡸 Voltar
+    <a className="bvoltar" href="/Sistema-de-Gerenciamento/#/">
+      <span>&#x2190;</span> Voltar
     </a>
-  )
+  );
 };
 
 // Formulário de input
@@ -152,7 +152,7 @@ const InputForm = ({ onAdicionar, config }) => {
         </button>
       </form>
       <CategoriaModal
-        visible={modalVisivel}
+        open={modalVisivel}
         onClose={() => setModalVisivel(false)}
         config={config}
       />
@@ -162,13 +162,13 @@ const InputForm = ({ onAdicionar, config }) => {
 
 // Modal para Categoria
 
-const CategoriaModal = ({ visible, onClose, config, opcoesCategoria, setOpcoesCategoria }) => {
+const CategoriaModal = ({ open, onClose, config, opcoesCategoria, setOpcoesCategoria }) => {
   const [categorias, setCategorias] = useState([]);
   const [novaCategoria, setNovaCategoria] = useState('');
 
   useEffect(() => {
     obterCategorias();
-  }, [visible]);
+  }, [open]);
 
   const obterCategorias = () => {
     // Fazer uma chamada GET à API para buscar as categorias
@@ -291,7 +291,7 @@ const CategoriaModal = ({ visible, onClose, config, opcoesCategoria, setOpcoesCa
   return (
     <Modal
       title="Adicionar Categoria"
-      visible={visible}
+      open={open}
       onOk={() => {
         onClose(categorias);
         setCategorias([]);
@@ -319,7 +319,7 @@ const CategoriaModal = ({ visible, onClose, config, opcoesCategoria, setOpcoesCa
 
 // Modal de Edição de Produtos
 
-const EditarProdutoModal = ({ produto, visible, onCancel, onSave, config }) => {
+const EditarProdutoModal = ({ produto, open, onCancel, onSave, config }) => {
   const [form] = Form.useForm();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [opcoesCategoria, setOpcoesCategoria] = useState([]);
@@ -362,7 +362,7 @@ const EditarProdutoModal = ({ produto, visible, onCancel, onSave, config }) => {
   return (
     <Modal
       title="Editar Produto"
-      visible={visible}
+      open={open}
       onCancel={onCancel}
       onOk={handleSave}
     >
@@ -739,7 +739,7 @@ const Estoque = () => {
         />
         <EditarProdutoModal
           produto={produtos[produtoEditando]}
-          visible={editarModalVisivel}
+          open={editarModalVisivel}
           onCancel={() => setEditarModalVisivel(false)}
           config={config}
           onSave={(produtoEditado) => {

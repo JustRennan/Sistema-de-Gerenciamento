@@ -11,8 +11,8 @@ import { useNavigate } from "react-router-dom";
 
 const Bvoltar = () => {
   return (
-    <a className="bvoltar" href="/">
-      <i className="fas fa-arrow-left"></i>🡸 Voltar
+    <a className="bvoltar" href="/Sistema-de-Gerenciamento/#/">
+      <span>&#x2190;</span> Voltar
     </a>
   );
 };
@@ -279,7 +279,7 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
   return (
     <Modal
       title="Produtos da Venda"
-      visible={isModalVisible}
+      open={isModalVisible}
       onCancel={handleCancel}
       onOk={handleFinalizarVenda}
     >

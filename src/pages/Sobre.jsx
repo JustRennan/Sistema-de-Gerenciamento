@@ -56,7 +56,7 @@ const Sobre = () => {
         </ul>
 
         <hr class="section-divider" />
-        <h3>&#x25CF; <a href="/Gerenciamento-de-Estoque/#/vendas">Cadastrar Venda</a>:</h3>
+        <h3>&#x25CF; <a href="/Sistema-de-Gerenciamento/#/cadastro">Cadastrar Venda</a>:</h3>
         <p>Página responsável por permitir o usuário cadastrar as vendas, guardando informações como o nome do Cliente, produto especifico que foi vendido, categoria do produto, os preços de venda e produção e por fim a data quando a venda foi realizada. As informações são então propriamente passadas para a tabela localizada na página de relatórios.</p>
         <div class="image-container">
           <div class="image-caption">Página de cadastro de vendas</div>
@@ -64,7 +64,7 @@ const Sobre = () => {
         </div>
 
         <hr class="section-divider" />
-        <h3>&#x25CF; <a href="/Gerenciamento-de-Estoque/#/relatorios">Relatórios</a>:</h3>
+        <h3>&#x25CF; <a href="/Sistema-de-Gerenciamento/#/vendas">Relatórios</a>:</h3>
         <p>Página responsável por armazenar todas as vendas cadastradas pelo estoque. Permitindo o usuário pesquisar as informações de vendas cadastradas atráves de um produto específico, pelo nome de algum cliente específico, ou pela quantidade geral de alguma venda (podendo assim comparar, quais e quando algum produto foi mais vendido).</p>
         <div class="image-container">
           <div class="image-caption">Página de relatórios de vendas</div>
@@ -72,7 +72,7 @@ const Sobre = () => {
         </div>
 
         <hr class="section-divider" />
-        <h3>&#x25CF; <a href="/Gerenciamento-de-Estoque/#/estoque">Estoque</a>:</h3>
+        <h3>&#x25CF; <a href="/Sistema-de-Gerenciamento/#/estoque">Estoque</a>:</h3>
         <p>Página responsável por armazenar todas as vendas cadastradas pelo estoque. Permitindo o usuário pesquisar as informações de vendas cadastradas atráves de um produto específico, pelo nome de algum cliente específico, ou pela quantidade geral de alguma venda (podendo assim comparar, quais e quando algum produto foi mais vendido).</p>
         <div class="image-container">
           <div class="image-caption">Página de produtos do estoque</div>
@@ -80,7 +80,7 @@ const Sobre = () => {
         </div>
 
         <hr class="section-divider" />
-        <h3>&#x25CF; <a href="/Gerenciamento-de-Estoque/#/clientes">Clientes</a>:</h3>
+        <h3>&#x25CF; <a href="/Sistema-de-Gerenciamento/#/clientes">Clientes</a>:</h3>
         <p>A página de clientes como o nome indica é responsável por manter uma tabela contendo as informações de contato de clientes da loja. Permitindo o usuário rapidamente pesquisar por um cliente espéficio com base no seu nome, através da barra de pesquisa.</p>
         <div class="image-container">
           <div class="image-caption">Página de cadastro dos clientes</div>

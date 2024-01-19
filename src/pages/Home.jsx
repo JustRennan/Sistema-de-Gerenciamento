@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import HeaderHome from '../components/HeaderHome';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { definirToken } from '../redux/loginSlice';
 
@@ -9,10 +9,18 @@ import { definirToken } from '../redux/loginSlice';
 const Botoes = () => {
   return (
     <div className="button-container">
-      <a className="button nova-venda" href="cadastro">Cadastrar Venda</a>
-      <a className="button estoque" href="estoque">Estoque</a>
-      <a className="button relatorio" href="vendas">Relatórios</a>
-      <a className="button clientes" href="clientes">Clientes</a>
+      <Link className="button nova-venda" to="/cadastro">
+        Vendas
+      </Link>
+      <Link className="button estoque" to="/estoque">
+        Estoque
+      </Link>
+      <Link className="button relatorio" to="/vendas">
+        Relatórios
+      </Link>
+      <Link className="button clientes" to="/clientes">
+        Clientes
+      </Link>
     </div>
   );
 };

@@ -12,10 +12,10 @@ import { useNavigate } from "react-router-dom";
 
 const Bvoltar = () => {
   return (
-      <a className="bvoltar" href="/">
-        <i className="fas fa-arrow-left"></i>🡸 Voltar
-      </a>
-  )
+    <a className="bvoltar" href="/Sistema-de-Gerenciamento/#/">
+      <span>&#x2190;</span> Voltar
+    </a>
+  );
 };
 
 // Formulário de input
@@ -77,7 +77,7 @@ const InputForm = ({ onAdicionar }) => {
 };
 
 // Modal para Edição de Clientes
-const EditarClienteModal = ({ cliente, visible, onCancel, onSave }) => {
+const EditarClienteModal = ({ cliente, open, onCancel, onSave }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -96,7 +96,7 @@ const EditarClienteModal = ({ cliente, visible, onCancel, onSave }) => {
   return (
     <Modal
       title="Editar Cliente"
-      visible={visible}
+      open={open}
       onCancel={onCancel}
       onOk={handleSave}
     >
@@ -432,7 +432,7 @@ const Clientes = () => {
         />
         <EditarClienteModal
           cliente={clientes[clienteEditando]}
-          visible={editarModalVisivel}
+          open={editarModalVisivel}
           onCancel={() => setEditarModalVisivel(false)}
           onSave={(clienteEditado) => {
             editarCliente(clienteEditado, clienteEditando);
