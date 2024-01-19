@@ -1,6 +1,6 @@
 {
-  "name": "gerenciamento-de-estoque",
-  "homepage": "https://andreatanasio.github.io/gerenciamento-de-estoque/",
+  "name": "Sistema-de-Gerenciamento",
+  "homepage": "https://justrennan.github.io/Sistema-de-Gerenciamento/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
