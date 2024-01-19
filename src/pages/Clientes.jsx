@@ -4,7 +4,6 @@ import Header from '../components/Header.jsx';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { Table, Button, Modal, Form, Input } from 'antd';
-import { baseUrlClientes } from '../util/constantes';
 import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 
@@ -13,10 +12,10 @@ import { useNavigate } from "react-router-dom";
 
 const Bvoltar = () => {
   return (
-    <a className="bvoltar" href="/Gerenciamento-de-Estoque/#/">
-      <span>&#x2190;</span> Voltar
-    </a>
-  );
+      <a className="bvoltar" href="/">
+        <i className="fas fa-arrow-left"></i>🡸 Voltar
+      </a>
+  )
 };
 
 // Formulário de input
@@ -43,12 +42,12 @@ const InputForm = ({ onAdicionar }) => {
           />
         </div>
         <div className="input-row">
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="aniversario">Aniversário:</label>
           <Controller
-            name="email"
+            name="aniversario"
             control={control}
             defaultValue=""
-            render={({ field }) => <input type="email" {...field} placeholder="Digite o email" />}
+            render={({ field }) => <input type="date" {...field} placeholder="Digite o aniversario" />}
           />
         </div>
         <div className="input-row">
@@ -61,12 +60,12 @@ const InputForm = ({ onAdicionar }) => {
           />
         </div>
         <div className="input-row">
-          <label htmlFor="endereco">Endereço:</label>
+          <label htmlFor="cpf">CPF:</label>
           <Controller
-            name="endereco"
+            name="cpf"
             control={control}
             defaultValue=""
-            render={({ field }) => <input type="text" {...field} placeholder="Digite o endereço" />}
+            render={({ field }) => <input type="text" {...field} placeholder="Digite o CPF" />}
           />
         </div>
         <button id="adicionar" className="buttonc" type="submit">
@@ -78,7 +77,7 @@ const InputForm = ({ onAdicionar }) => {
 };
 
 // Modal para Edição de Clientes
-const EditarClienteModal = ({ cliente, open, onCancel, onSave }) => {
+const EditarClienteModal = ({ cliente, visible, onCancel, onSave }) => {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -97,7 +96,7 @@ const EditarClienteModal = ({ cliente, open, onCancel, onSave }) => {
   return (
     <Modal
       title="Editar Cliente"
-      open={open}
+      visible={visible}
       onCancel={onCancel}
       onOk={handleSave}
     >
@@ -110,11 +109,11 @@ const EditarClienteModal = ({ cliente, open, onCancel, onSave }) => {
           <Input />
         </Form.Item>
         <Form.Item
-          name="email"
-          label="Email"
+          name="aniversario"
+          label="Aniversario"
           rules={[
-            { required: true, message: 'Por favor, insira o email do cliente!' },
-            { type: 'email', message: 'Por favor, insira um email válido!' },
+            { required: true, message: 'Por favor, insira o aniversario do cliente!' },
+            { type: 'date', message: 'Por favor, insira um aniversario válido!' },
           ]}
         >
           <Input />
@@ -129,8 +128,8 @@ const EditarClienteModal = ({ cliente, open, onCancel, onSave }) => {
           <Input />
         </Form.Item>
         <Form.Item
-          name="endereco"
-          label="Endereço"
+          name="cpf"
+          label="Cpf"
           rules={[{ required: true, message: 'Por favor, insira o endereço do cliente!' }]}
         >
           <Input />
@@ -169,9 +168,9 @@ const ListaClientes = ({ clientes, onEditarCliente, onExcluirCliente }) => {
       render: (text) => text || '---',
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: 'Aniversario',
+      dataIndex: 'aniversario',
+      key: 'aniversario',
       render: (text) => text || '---',
     },
     {
@@ -181,9 +180,9 @@ const ListaClientes = ({ clientes, onEditarCliente, onExcluirCliente }) => {
       render: (text) => text || '---',
     },
     {
-      title: 'Endereço',
-      dataIndex: 'endereco',
-      key: 'endereco',
+      title: 'CPF',
+      dataIndex: 'cpf',
+      key: 'cpf',
       render: (text) => text || '---',
     },
     {
@@ -210,22 +209,22 @@ const ListaClientes = ({ clientes, onEditarCliente, onExcluirCliente }) => {
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
+  const [aniversario, setAniversario] = useState('');
   const [telefone, setTelefone] = useState('');
-  const [endereco, setEndereco] = useState('');
+  const [cpf, setCpf] = useState('');
   const [pesquisaNome, setPesquisaNome] = useState('');
   const [clientesOriginal, setClientesOriginal] = useState([]);
   const [clienteEditando, setClienteEditando] = useState(null);
   const [editarModalVisivel, setEditarModalVisivel] = useState(false);
   const [clientesFiltrados, setClientesFiltrados] = useState([]);
   const token = useSelector((state) => state.token)
-  
+
   const config = {
      headers: {
        'Authorization': 'Bearer ' + token
      }
    };  
- 
+
   useEffect(() => {    
     atualizaLista();
   }, []);
@@ -241,33 +240,37 @@ const Clientes = () => {
     }
   }, [token]);
 
+  ////
+  
+  useEffect(() => {
+    atualizaLista();
+  }, []);
+
   // Atualiza a tabela caso um comando seja executado
 
   function atualizaLista() {
-    axios.get(baseUrlClientes, config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes', config)
       .then((response) => {
         if (response.status == 200) {
           const dados = response.data.data;
+          console.log(dados);
           let dadosProcessados = dados.map((cliente) => {
             return {
               key: cliente.id,
               nome: cliente.attributes.nome,
-              email: cliente.attributes.email,
+              aniversario: cliente.attributes.aniversario,
               telefone: cliente.attributes.telefone,
-              endereco: cliente.attributes.endereco,
+              cpf: cliente.attributes.cpf,
             }
           });
           setClientes(dadosProcessados);
           setClientesOriginal(dadosProcessados);
           setClientesFiltrados(dadosProcessados);
-          console.log("Recebeu a lista de clientes!");
         } else {
-          console.log("TOKENNN: ", config);
           alert("Houve um erro na conexão com o servidor!")
         }
       })
       .catch((error) => {
-        console.log("TOKENNN: ", config);
         console.log(error)
         alert("Houve um erro na conexão com o servidor!")
       });
@@ -284,20 +287,19 @@ const Clientes = () => {
   // Função para adicionar clientes
 
   const adicionarCliente = (data) => {
-    if (data.nome && data.email && data.telefone && data.endereco) {
+    if (data.nome && data.aniversario && data.telefone && data.cpf) {
       const novoCliente = {
         data: {
           nome: data.nome,
-          email: data.email,
+          aniversario: data.aniversario,
           telefone: data.telefone,
-          endereco: data.endereco,
+          cpf: data.cpf,
         },
       };
 
-      axios.post(baseUrlClientes, novoCliente, config)
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes', novoCliente, config)
         .then((response) => {
           if (response.status === 200) {
-            alert("Cliente adicionado com sucesso!");
             atualizaLista();
           } else {
             console.error('Erro de servidor:', response);
@@ -320,17 +322,17 @@ const Clientes = () => {
     if (clienteEditado.nome) {
       camposEditados.nome = clienteEditado.nome;
     }
-    if (clienteEditado.email) {
-      camposEditados.email = clienteEditado.email;
+    if (clienteEditado.aniversario) {
+      camposEditados.aniversario = clienteEditado.aniversario;
     }
     if (clienteEditado.telefone) {
       camposEditados.telefone = clienteEditado.telefone;
     }
-    if (clienteEditado.endereco) {
-      camposEditados.endereco = clienteEditado.endereco;
+    if (clienteEditado.cpf) {
+      camposEditados.cpf = clienteEditado.cpf;
     }
 
-    axios.put(baseUrlClientes + `/${novosClientes[clienteEditando].key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes/${novosClientes[clienteEditando].key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           setClientes(novosClientes);
@@ -350,14 +352,14 @@ const Clientes = () => {
     console.log(clienteId);
 
     // Fazer uma chamada à API para verificar se existem clientes relacionados a vendas
-    axios.get(baseUrlClientes + `/${clienteId}/?populate=vendas`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes/${clienteId}/?populate=vendas`, config)
       .then((response) => {
         if (response.status === 200) {
           const clienteExcluidoNome = response.data.data.attributes.nome;
           const vendasRelacionadas = response.data.data.attributes.vendas.data;
-          console.log('Cliente relacionados à vendas:', vendasRelacionadas);
+          console.log('Produtos relacionados à categoria:', vendasRelacionadas);
 
-          if (vendasRelacionadas.length > 0) {
+          if (vendasRelacionadas .length > 0) {
             //Se existe, erro
             alert('Não é possível excluir o cliente, pois existem vendas cadastradas relacionados ao cliente.');
           } else {
@@ -377,10 +379,10 @@ const Clientes = () => {
   const confirmarExclusaoCliente = (clienteId, clienteExcluidoNome) => {
     const confirmarExclusao = window.confirm(`Tem certeza de que deseja excluir o cliente: ${clienteExcluidoNome}?`);
     if (confirmarExclusao) {
-      axios.delete(baseUrlClientes + `/${clienteId}`, config)
+      axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes/${clienteId}`, config)
         .then((response) => {
           if (response.status === 200) {
-            atualizaLista();
+              atualizaLista();
           } else {
             console.error('Erro na resposta da API ao excluir o cliente');
           }
@@ -391,6 +393,7 @@ const Clientes = () => {
     }
   };
 
+
   // Lógica de Pesquisar Clientes
   const pesquisarCliente = () => {
     const nomePesquisado = pesquisaNome.trim().toLowerCase();
@@ -400,7 +403,7 @@ const Clientes = () => {
     setClientesFiltrados(resultadoPesquisa);
   };
 
-
+  
   return (
     <div>
       <Header />
@@ -408,13 +411,13 @@ const Clientes = () => {
       <div className="container">
         <InputForm
           nome={nome}
-          email={email}
+          aniversario={aniversario}
           telefone={telefone}
-          endereco={endereco}
+          cpf={cpf}
           onNomeChange={(e) => setNome(e.target.value)}
-          onEmailChange={(e) => setEmail(e.target.value)}
+          onAniversarioChange={(e) => setAniversario(e.target.value)}
           onTelefoneChange={(e) => setTelefone(e.target.value)}
-          onEnderecoChange={(e) => setEndereco(e.target.value)}
+          onCpfChange={(e) => setCpf(e.target.value)}
           onAdicionar={adicionarCliente}
         />
         <BarraPesquisa
@@ -429,7 +432,7 @@ const Clientes = () => {
         />
         <EditarClienteModal
           cliente={clientes[clienteEditando]}
-          open={editarModalVisivel}
+          visible={editarModalVisivel}
           onCancel={() => setEditarModalVisivel(false)}
           onSave={(clienteEditado) => {
             editarCliente(clienteEditado, clienteEditando);

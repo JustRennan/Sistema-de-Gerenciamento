@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../components/Header.jsx';
-import { Table, Button, Modal, Space, Select, Tooltip } from 'antd';
+import { Table, Button, Modal, Space, Select } from 'antd';
 import { EditOutlined, DeleteOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import '../styles/relatorios.css';
-import { baseUrlClientes, baseUrlEstoque, baseUrlItems, baseUrlVendas, getParametersVendasPadrao } from '../util/constantes';
 import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-
-
 
 // Boltão para voltar a página principal
 
 const Bvoltar = () => {
   return (
-    <a className="bvoltar" href="/Gerenciamento-de-Estoque/#/">
-      <span>&#x2190;</span> Voltar
+    <a className="bvoltar" href="/">
+      <i className="fas fa-arrow-left"></i>🡸 Voltar
     </a>
-  );
+  )
 };
 
 // Barra de pesquisa
@@ -33,7 +30,7 @@ const PesquisaBarra = ({ pesquisaNome, pesquisaData, atualizaLista, config }) =>
 
   useEffect(() => {
     // Get para opção de Clientes
-    axios.get(baseUrlClientes, config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosClientes = response.data.data;
@@ -139,7 +136,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
     atualizaLista();
 
     // Get para opções de Clientes
-    axios.get(baseUrlClientes, config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosClientes = response.data.data;
@@ -160,7 +157,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       });
 
     // Get para Opções de Produtos
-    axios.get(baseUrlEstoque, config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosProdutos = response.data.data;
@@ -170,10 +167,10 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
               label: produto.attributes.descricao,
               preco: produto.attributes.preco,
               custo: produto.attributes.custo,
-              quantidade: produto.attributes.quantidade,
+              quantidadecasa: produto.attributes.quantidadecasa,
             };
           });
-          console.log(dadosProcessadosProdutos);
+          console.log("GET PRODUTOS: ", dadosProcessadosProdutos);
           setOpcoesProdutos(dadosProcessadosProdutos);
         } else {
           console.error('Erro na resposta da API de produtos');
@@ -187,7 +184,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   const obterProdutos = (vendaId) => {
     return new Promise((resolve, reject) => {
       axios
-        .get(baseUrlItems + `?filters[venda][id][$eq]=${vendaId}&populate=*`, config)
+        .get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda?filters[venda][id][$eq]=${vendaId}&populate=*`, config)
         .then((response) => {
           if (response.status === 200) {
             const dadosProdutos = response.data.data;
@@ -238,7 +235,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       camposEditados.desconto = vendaEditada.desconto;
     }
 
-    axios.put(baseUrlVendas + `/${vendaEditada.key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas/${vendaEditada.key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           console.log("VENDA EDITADA. Status: ", response.status);
@@ -270,7 +267,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       camposEditados.preco_venda = itemEditado.preco_venda;
     }
 
-    axios.put(baseUrlItems + `/${itemEditado.key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda/${itemEditado.key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           console.log("Item editado com sucesso:, ", itemEditado.key);
@@ -287,7 +284,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   // Excluir Venda
 
   const excluirVenda = (vendaId) => {
-    axios.delete(baseUrlVendas + `/${vendaId}`, config)
+    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas/${vendaId}`, config)
       .then((response) => {
         atualizaLista();
       })
@@ -297,7 +294,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   };
 
   const excluirProduto = (produtoId) => {
-    axios.delete(baseUrlItems + `/${produtoId}`, config)
+    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda/${produtoId}`, config)
     .then((response) => {
       console.log("Produto excluido: ", produtoId);
     })
@@ -357,16 +354,19 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
 
   const showEditModal = (record) => {
     setLoading(true);
-  
+
     obterProdutos(record.key).then((produtos) => {
       const modalContent = (
         <div>
           <h3>Venda</h3>
+          {/* Campos de input para editar dados da venda */}
           <div>
             <label htmlFor="editCliente">Cliente:</label>
             <Select
               id="editCliente"
-              style={{ marginLeft: '105px' }}
+              style={{
+                marginLeft: '105px',
+              }}
               defaultValue={record.cliente}
               onChange={(value) => (record.cliente = value)}
             >
@@ -382,7 +382,9 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
             <input
               type="date"
               id="editData"
-              style={{ marginLeft: '120px' }}
+              style={{
+                marginLeft: '120px',
+              }}
               defaultValue={record.data}
               onChange={(e) => (record.data = e.target.value)}
             />
@@ -391,7 +393,9 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
             <label htmlFor="editPagamento">Tipo de Pagamento:</label>
             <Select
               id="editPagamento"
-              style={{ marginLeft: '23px' }}
+              style={{
+                marginLeft: '23px',
+              }}
               defaultValue={record.pagamento}
               onChange={(value) => (record.pagamento = value)}
             >
@@ -423,13 +427,15 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
           </div>
           <h3>Itens da Venda</h3>
           {produtos.map((produto, index) => (
-            <div key={index} style={{ display: 'block', marginBottom: '1em' }}>
-              <hr></hr>
+            <div key={index}>
+              {/* Campos de input para editar dados dos itens da venda */}
               <div>
                 <label htmlFor={`editProduto${index}`}>Produto:</label>
                 <Select
                   id={`editProduto${index}`}
-                  style={{ marginLeft: '90px' }}
+                  style={{
+                    marginLeft: '100px',
+                  }}
                   defaultValue={produto.produto}
                   onChange={(value) => (produto.produto = value)}
                 >
@@ -471,14 +477,17 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
                   onChange={(e) => (produto.quantidade_vendida = parseInt(e.target.value))}
                 />
               </div>
+              {index < produtos.length - 1 && (
+                <div style={{ marginBottom: '1em' }}> </div>
+              )}
             </div>
           ))}
         </div>
       );
-  
+
       setDeleteModalContent(modalContent);
       setLoading(false);
-  
+
       Modal.confirm({
         title: 'Editor de Venda',
         content: modalContent,
@@ -486,7 +495,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
           produtos.forEach((produto) => {
             editarItemVenda(produto);
           });
-  
+
           editarVenda(record);
         },
         onCancel() {
@@ -547,19 +556,6 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
   const showDetailsModal = (record) => {
     setLoading(true);
     obterProdutos(record.key).then((produtos) => {
-      // Calcule o valor total da venda
-      const totalVenda = produtos.reduce((total, produto) => {
-        return total + produto.preco_venda * produto.quantidade_vendida;
-      }, 0);
-
-      const lucroReal = produtos.reduce((lucro, produto) => {
-        return (
-          (lucro +
-          (produto.preco_venda - produto.custo_venda) * produto.quantidade_vendida)
-          - (record.desconto/2)
-        );
-      }, 0);
-    
       const modalContent = (
         <div>
           <h3>Itens da Venda</h3>
@@ -569,22 +565,11 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
               <strong>Preço do Cliente (R$):</strong> {produto.preco_venda}<br />
               <strong>Custo do Vendedor (R$):</strong> {produto.custo_venda}<br />
               <strong>Quantidade Vendida:</strong> {produto.quantidade_vendida}<br />
-              <hr></hr>
               {index < produtos.length - 1 && (
-                <div style={{ marginBottom: '10px' }}> </div>
+                <div style={{ marginBottom: '1em' }}> </div>
               )}
             </div>
           ))}
-          <div>
-            <Tooltip title="Valor total pago pelo cliente." placement="right">
-              <span><InfoCircleOutlined /> <strong>Venda Total (R$):</strong> {totalVenda.toFixed(2)}</span>
-            </Tooltip>
-          </div>
-          <div>
-          <Tooltip title="Saldo positivo real da venda." placement="right">
-              <span><InfoCircleOutlined /> <strong>Lucro Real (R$):</strong> {lucroReal.toFixed(2)}</span>
-            </Tooltip>
-          </div>
         </div>
       );
       setModalContent(modalContent);
@@ -592,7 +577,6 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       setModalVisible(true);
     });
   };
-  
 
   return (
     <div>
@@ -600,7 +584,7 @@ const TableVendas = ({ data, setData, atualizaLista, config }) => {
       {/* Modal de Detalhes */}
       <Modal
         title="Detalhes da Venda"
-        open={modalVisible}
+        visible={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
       >
@@ -643,11 +627,11 @@ const Relatorios = () => {
       return navigate("/login");
     }
   }, [token]);
-  
+
   // receber tabela
 
   function atualizaLista() {
-    axios.get(baseUrlVendas + getParametersVendasPadrao, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas?sort=data:desc&populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const dados = response.data.data;
@@ -660,14 +644,14 @@ const Relatorios = () => {
               entrega: venda.attributes.entrega.toFixed(2),
               desconto: venda.attributes.desconto.toFixed(2),            }
           });
-          console.log(dadosProcessados);
+          console.log("VENDAS: ", dadosProcessados);
           setData(dadosProcessados);
         } else {
           alert("Houve um erro na conexão com o servidor!");
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.log("ERROR VENDAS: ", error);
         alert("Houve um erro na conexão com o servidor!");
       });
   }
@@ -692,7 +676,7 @@ const Relatorios = () => {
   };
 
   const pesquisaNome = (clienteId) => {
-    axios.get(baseUrlVendas + `?sort=data:desc&filters[cliente][id][$eq]=${clienteId}&populate=*`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas?sort=data:desc&filters[cliente][id][$eq]=${clienteId}&populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const dados = response.data.data;
@@ -718,7 +702,7 @@ const Relatorios = () => {
   }
 
   const pesquisaData = (dataInicio, dataFim) => {
-    axios.get(baseUrlVendas + `?sort=data:desc&filters[data][$gte]=${dataInicio}&filters[data][$lte]=${dataFim}&populate=*`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas?sort=data:desc&filters[data][$gte]=${dataInicio}&filters[data][$lte]=${dataFim}&populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const dados = response.data.data;
@@ -760,7 +744,7 @@ const Relatorios = () => {
       {/* Modal de Edição */}
       <Modal
         title="Editar Venda"
-        open={editModalVisible}
+        visible={editModalVisible}
         onCancel={() => setEditModalVisible(false)}
         onOk={handleEdit}
       >
@@ -769,7 +753,7 @@ const Relatorios = () => {
 
       <Modal
         title="Confirmar Exclusão"
-        open={deleteModalVisible}
+        visible={deleteModalVisible}
         onOk={() => {
           setDeleteModalVisible(false);
         }}
@@ -781,7 +765,7 @@ const Relatorios = () => {
       {/* Modal de Detalhes */}
       <Modal
         title="Detalhes da Venda"
-        open={detailsModalVisible}
+        visible={detailsModalVisible}
         onCancel={() => setDetailsModalVisible(false)}
         footer={null}
       >

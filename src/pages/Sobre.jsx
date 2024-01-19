@@ -41,7 +41,6 @@ const Sobre = () => {
         <p>Este webapp de gerenciamento de estoque trata-se de um projeto realizado no âmbito de desenvolver soluções tecnológicas que sirvam as necessidades do dia a dia de microempreendedores e pequenos negócios localizados na cidade de Esperança e região.</p>
         <p>O objetivo principal do webapp é fornecer uma solução eficiente e intuitiva para o controle de estoque de estoque e administração comercial de seu usuário. Permitindo o registro de produtos, gerenciamento de entradas de vendas, geração de relatórios de vendas e o cadastro de contato dos clientes.</p>
         <p>O desenvolvimento do webapp contou com a participação dos membros do Projeto de Extensão: IDEAÇÃO. Realizado no Instituto Federal de Ciência, Educação e Tecnologia da Paraíba - Campus Esperança</p>
-
       </section>
 
       <hr className="section-divider" />
@@ -66,7 +65,7 @@ const Sobre = () => {
 
         <hr class="section-divider" />
         <h3>&#x25CF; <a href="/Gerenciamento-de-Estoque/#/relatorios">Relatórios</a>:</h3>
-        <p>Página responsável por armazenar todas as vendas cadastradas pelo estoque. Permitindo o usuário pesquisar as informações de vendas cadastradas atráves de algum cliente específico ou por um intervalo de datas. Por padrão as datas da tabela são organizadas em ordem descrescente, isto é, da venda mais recente para a mais antiga</p>
+        <p>Página responsável por armazenar todas as vendas cadastradas pelo estoque. Permitindo o usuário pesquisar as informações de vendas cadastradas atráves de um produto específico, pelo nome de algum cliente específico, ou pela quantidade geral de alguma venda (podendo assim comparar, quais e quando algum produto foi mais vendido).</p>
         <div class="image-container">
           <div class="image-caption">Página de relatórios de vendas</div>
           <img src={RelatoriosImage} alt="Relatórios de vendas" width="52%" height="50%" />
@@ -74,7 +73,7 @@ const Sobre = () => {
 
         <hr class="section-divider" />
         <h3>&#x25CF; <a href="/Gerenciamento-de-Estoque/#/estoque">Estoque</a>:</h3>
-        <p>Página responsável por manter anotado o estoque de produtos da loja. Contendo informações individuais de cada produto como preço, categoria, quantidade e o status atual no estoque. Por fim, a página contem uma simples barra de pesquisa que permite o usuário pesquisar um produto específico pelo seu nome.</p>
+        <p>Página responsável por armazenar todas as vendas cadastradas pelo estoque. Permitindo o usuário pesquisar as informações de vendas cadastradas atráves de um produto específico, pelo nome de algum cliente específico, ou pela quantidade geral de alguma venda (podendo assim comparar, quais e quando algum produto foi mais vendido).</p>
         <div class="image-container">
           <div class="image-caption">Página de produtos do estoque</div>
           <img src={EstoqueImage} alt="Estoque de produtos" width="52%" height="50%" />

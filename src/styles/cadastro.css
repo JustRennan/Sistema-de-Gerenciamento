@@ -30,13 +30,15 @@ body {
 
 /* Boltão mobile de voltar a tela principal */
 
+/* Boltão de voltar a tela principal */
+
 .bvoltar {
   position: fixed;
   top: 1%;
   left: 1%;
-  color: #0e440f;
+  color: #00bdba;
   font-size: 20px;
-  text-decoration: none;
+  text-decoration: none; /* Remover sublinhado do link */
 }
 
 /* Container */
@@ -47,18 +49,19 @@ body {
   align-items: center;
   position: center;
   z-index: 0;
-  margin-top: 50%;
+  margin-top: 15%;
   max-width: 85hv;
+}
+/* Torna visivel o botão de voltar do header */
+
+.header-toggle {
+  display: block;
 }
 
 /* Display mobile */
 @media screen and (max-width: 800px) {
   body {
     align-items: flex-start;
-  }
-
-  .header {
-    display: none;
   }
   
   .container-vendas {
@@ -77,13 +80,14 @@ body {
 
 
 .input-container-vendas {
-  background-color: #599768;
+  background-color: #355f49;
   padding: 20px;
   margin-bottom: 25px;
   font-weight: bold;
   display: flex;  flex-direction: column;
   align-items: center;
   margin-top: -170px;
+  border-radius: 10px;
 }
 
 .input-container-vendas input {
@@ -98,7 +102,7 @@ body {
 }
 
 .input-row-vendas label {
-  width: 200px;
+  width: 100px;
   text-align: left;
 }
 
@@ -126,47 +130,4 @@ body {
 
 #relatorios-link {
   color: yellow;
-}
-
-
-/* Tabelas produtos adicionados */
-
-.input-row-cadastro-table-container {
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.barra-rolagem {
-  table-layout: fixed;
-  width: calc(100% - 5px);
-}
-
-.barra-rolagem tbody {
-  padding-right: 5px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #73AA77;
-}
-
-th, td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #000000;
-}
-
-th, td label {
-  color: #ffffff;
-}
-
-
-th {
-  background-color: #0a4c06;
-}
-
-
-tbody tr:hover {
-  background-color: #92c49e;
 }

@@ -1,43 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { NumericFormat } from 'react-number-format';
 import '../styles/cadastro.css';
 import Header from '../components/Header.jsx';
-import { Modal, Table, Button, Select } from 'antd';
+import { Modal, Form, Select, Table, Button } from 'antd';
 import axios from 'axios';
-import { 
-    ERRO_SERVIDOR, 
-    ERRO_PRODUTO_ITEM_VENDA,
-    MSG_CAMPOS_OBRIGATORIOS, 
-    MSG_VENDA_CADASTRO_SUCESSO,
-    baseUrlClientes, 
-    baseUrlEstoque, 
-    baseUrlItems, 
-    baseUrlVendas 
-  } from '../util/constantes';
 import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-
-const URL_CLIENTES_ORDENADOS = baseUrlClientes + '?sort=nome';
-const URL_PRODUTOS_ORDENADOS = baseUrlEstoque + '?sort=descricao';
-const URL_ITENS_VENDA = baseUrlItems + '?populate=*&filters[venda][id][$eq]=';
 
 // Botão Voltar para Mobile 
 
 const Bvoltar = () => {
   return (
-    <a className="bvoltar" href="/Gerenciamento-de-Estoque/#/">
-      <span>&#x2190;</span> Voltar
+    <a className="bvoltar" href="/">
+      <i className="fas fa-arrow-left"></i>🡸 Voltar
     </a>
   );
 };
 
 // Mensagem para link para relatórios
 
-const LinkRelatorios = () => {
+const MensagSucess = () => {
   return (
     <div>
-      <a id="relatorios-link" href="/Gerenciamento-de-Estoque/#/relatorios">
+      <div id="success-message" style={{ display: 'none' }}>
+        Venda cadastrada com sucesso!
+      </div>
+      <a id="relatorios-link" href="vendas">
         Ir para Relatórios
       </a>
     </div>
@@ -46,42 +34,22 @@ const LinkRelatorios = () => {
 
 // Modal
 
-const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, venda, config, hideModal, carregaClientes, carregaProdutos, limpaCampos }) => {
-  const [produtoId, setProdutoId] = useState(null);
+const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, venda, hideModal, config }) => {
+  const [form] = Form.useForm();
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [precoVenda, setPrecoVenda] = useState("");
   const [custoVendedor, setCustoVendedor] = useState("");
-  const [precoVendaF, setPrecoVendaF] = useState("");
-  const [custoVendedorF, setCustoVendedorF] = useState("");
   const [produtoTableData, setProdutoTableData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const navigate = useNavigate();
-
-  const { Option } = Select;
-
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-  };
-
-  const handleCancelItens = () => {
-    
-    setPrecoVenda("");
-    setCustoVendedor("");
-    setPrecoVendaF("");
-    setCustoVendedorF("");
-    setProdutoTableData([]);
-    
-    document.getElementById("quantidade").value = "";
-    
-    handleCancel();
-  }
+  const [quantidadeTableData, setQuantidadeTableData] = useState([]);
+  const [estoqueDisponivel, setEstoqueDisponivel] = useState({});
+  const [produtoIdBuscado, setProdutoIdBuscado] = useState(null);
 
   // Determina a quantidade atual no estoque
-  const buscarQuantidadeDisponivel = (prod) => {
-    const produto = opcoesProdutos.find((p) => p.value == prod);
-    
+  const buscarQuantidadeDisponivel = (produtoId) => {
+    const produto = opcoesProdutos.find((p) => p.value === produtoId);
+
     if (produto) {
-      return produto.quantidade;
+      return produto.quantidadeloja;
     }
 
     return 0;
@@ -89,16 +57,14 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
 
   // Atualiza a Tabela do Modal
   const atualizarTabelaItems = (vendaID) => {    
-    console.log(URL_ITENS_VENDA + vendaID)
-    axios.get(URL_ITENS_VENDA + vendaID, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda?filters[venda][id][$eq]=${vendaID}&populate=*`, config)
     .then((response) => {
       if (response.status === 200) {
         const dadosItemVenda = response.data.data;
-        
+        console.log(dadosItemVenda);
         let dadosProcessadosItemVenda = dadosItemVenda.map((itemvenda) => {
           return {
             key: itemvenda.id,
-            produtoId: itemvenda.attributes.produto.data.id,
             produto: itemvenda.attributes.produto.data.attributes.descricao,
             quantidade_vendida: itemvenda.attributes.quantidade_vendida,
             custo_venda: itemvenda.attributes.custo_venda,
@@ -108,86 +74,86 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
         setProdutoTableData(dadosProcessadosItemVenda);
       } else {
         console.error('Erro na resposta da API');
-        alert(ERRO_SERVIDOR);
       }
     })
     .catch((error) => {
       console.error('Erro ao fazer a chamada da API:', error);
-      alert(ERRO_SERVIDOR);
     });
   };
 
   // Cadastra o produto na tabela
   const handleCadastrarProduto = async () => {
-    const prodCadastrado = produtoTableData.find( (produto) => produto.produtoId == produtoId );
+    const produto = selectedProduct;
+    const preco_venda = document.getElementById("preco").value;
+    const custo_venda = document.getElementById("custo").value;
+    const quantidade_vendida = document.getElementById("quantidade").value;
 
-    if (!prodCadastrado) {
-    
-      console.log(produtoId)
-      const preco_venda = precoVenda;
-      const custo_venda = custoVendedor;
-      const quantidade_vendida = document.getElementById("quantidade").value;
+    if (produto && preco_venda && custo_venda && quantidade_vendida) {
+      const produtoId = produto;
+      const quantidadeDisponivel = await buscarQuantidadeDisponivel(produtoId);
 
-      if (produtoId && preco_venda && custo_venda && quantidade_vendida) {
-        const quantidadeDisponivel = await buscarQuantidadeDisponivel(produtoId);
+      console.log("produtoId:", produtoId);
+      console.log("quantidade_vendida:", quantidade_vendida);
 
-        // Verifique se a quantidade vendida não excede a quantidade disponível no estoque
-        if (quantidadeDisponivel >= quantidade_vendida) {
-          const data = { produto: produtoId, preco_venda, custo_venda, quantidade_vendida };
+      // Verifique se a quantidade vendida não excede a quantidade disponível no estoque
+      if (quantidadeDisponivel >= quantidade_vendida) {
+        const data = { produto, preco_venda, custo_venda, quantidade_vendida };
 
-          criarItemVenda(data);
-        } else {
-          alert('Quantidade não disponível! Estoque: ' + quantidadeDisponivel);
-        }
+        console.log("Dados do Produto: ", data);
+
+        criarItemVenda(data);
+
+        setEstoqueDisponivel({
+          ...estoqueDisponivel,
+          [produtoId]: quantidadeDisponivel - quantidade_vendida,
+        });
+
+        atualizarTabelaItems(venda);
       } else {
-        alert(MSG_CAMPOS_OBRIGATORIOS);
+        alert('Produto não cadastrado. A unidades da venda não podem ser maior que a quantidade disponível no estoque');
       }
-    } else {
-      alert(ERRO_PRODUTO_ITEM_VENDA);
     }
   };
 
   // Faz o Post para ItemVenda
   const criarItemVenda = (data) => {
-    const novoItem = {
-      data: {
-        venda: venda,
-        produto: data.produto,
-        preco_venda: data.preco_venda,
-        custo_venda: data.custo_venda,
-        quantidade_vendida: data.quantidade_vendida
-      },
-    };
+    if (data.produto && data.preco_venda && data.custo_venda && data.quantidade_vendida) {
+      const novoItem = {
+        data: {
+          venda: venda,
+          produto: data.produto,
+          preco_venda: data.preco_venda,
+          custo_venda: data.custo_venda,
+          quantidade_vendida: data.quantidade_vendida
+        },
+      };
 
-    axios.post(baseUrlItems, novoItem, config)
-      .then((response) => {
-        if (response.status === 200) {
-          atualizarTabelaItems(venda);
-        } else {
-          console.error('Erro de servidor:', response);
-          alert(ERRO_SERVIDOR);
-        }
-      })
-      .catch((error) => {
-        console.error('Erro ao adicionar o item:', error);
-        alert(ERRO_SERVIDOR);
-      });
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda', novoItem, config)
+        .then((response) => {
+          if (response.status === 200) {
+            console.log("Item da Venda Cadastrada com Sucesso!");
+          } else {
+            console.error('Erro de servidor:', response);
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao adicionar o cliente:', error);
+        });
+    }
   };
 
   // Requisição Delete para ItemVenda
   const handleRemoverProduto = (itemvenda) => {
-    axios.delete(baseUrlItems + `/${itemvenda.key}`, config)
+    axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-itens-venda/${itemvenda.key}`, config)
     .then((response) => {
       if (response.status === 200) {
         atualizarTabelaItems(venda);
       } else {
         console.error('Erro na resposta da API ao excluir o item');
-        alert(ERRO_SERVIDOR);
       }
     })
     .catch((error) => {
       console.error('Erro ao fazer a chamada da API para excluir a categoria:', error);
-      alert(ERRO_SERVIDOR);
     });
   };
 
@@ -198,41 +164,85 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
       produtoTableData.forEach((item) => {
         const itemvendaId = item.key;
         const quantidadeVendida = item.quantidade_vendida;
-        const prod = item.produtoId;
+        const produtoNome = item.produto;
 
-        atualizarEstoque(quantidadeVendida, prod);
+        // Encontre o ID do produto com base no nome do produto
+        const produtoId = opcoesProdutos.find((produto) => produto.label === produtoNome)?.value;
+
+        console.log("Id do Produto: ", itemvendaId);
+        console.log("Quantidade Vendida: ", quantidadeVendida);
+
+        atualizarEstoque(itemvendaId, quantidadeVendida, produtoId);
       });
 
-      alert(MSG_VENDA_CADASTRO_SUCESSO);
-      carregaClientes();
-      carregaProdutos();
       hideModal();
-      return navigate("/relatorios");
+      console.log(isModalVisible);
+    }
+  };
+
+  // Retorna o id do produto ap artir do id do Itemvenda
+  const procurarIdProduto = async (itemvendaId) => {
+    try {
+      const response = await axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos?filters[item-venda][id][$eq]=${itemvendaId}&populate=*`, config);
+
+      if (response.status === 200) {
+        const dadosProdutoProcurado = response.data.data;
+
+        if (dadosProdutoProcurado.length > 0) {
+          const primeiroProdutoEncontrado = dadosProdutoProcurado[0];
+          console.log("Produto encontrado:", primeiroProdutoEncontrado);
+          return primeiroProdutoEncontrado.attributes;
+        } else {
+          console.error('Nenhum produto encontrado para o item de venda ID:', itemvendaId);
+          return null;
+        }
+      } else {
+        console.error('Erro na resposta da API');
+        return null;
+      }
+    } catch (error) {
+      console.error('Erro ao fazer a chamada da API:', error);
+      return null;
     }
   };
 
   // Atualiza a quantidade atual do estoque
-  const atualizarEstoque = async (quantidadeVendida, prod) => {
-    const qtdDisponivel = buscarQuantidadeDisponivel(prod);
-    const novaQuantidade = qtdDisponivel - quantidadeVendida;
-    const camposEditados = {
-      data: {
-        quantidade: novaQuantidade
-      }
-    };
-    axios.put(baseUrlEstoque + `/${prod}`, camposEditados, config)
-      .then((response) => {
-        if (response.status === 200) {
-          console.log("Estoque atualizado com sucesso!");
+  const atualizarEstoque = async (itemvendaId, quantidadeVendida, produtoId) => {
+    try {
+      const produto = await procurarIdProduto(itemvendaId);
+      console.log("Produto: ", produto);
+      console.log("Id Prod FInal: ", produtoId);
+
+      if (produto) {
+        const quantidadeDisponivel = produto.quantidadeloja;
+        console.log("Quantidade Disponível: ", quantidadeDisponivel);
+
+        if (quantidadeDisponivel >= quantidadeVendida) {
+          const novaQuantidade = quantidadeDisponivel - quantidadeVendida;
+          console.log("Quantidade Atualizada: ", novaQuantidade);
+
+          const camposEditados = {};
+          if (novaQuantidade) {
+            camposEditados.quantidadeloja = novaQuantidade;
+          }
+          axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}`, { data: camposEditados }, config)
+          .then((response) => {
+            if (response.status === 200) {
+              console.log("Estoque atualizado com sucesso!");
+            } else {
+              console.error('Erro de servidor:', response);
+            }
+          })
+          .catch((error) => {
+            console.error('Erro na atualização do estoque', error);
+          });
         } else {
-          console.error('Erro de servidor:', response);
-          alert(ERRO_SERVIDOR);
+          alert('Erro ao remover produto do estoque');
         }
-      })
-      .catch((error) => {
-        console.error('Erro na atualização do estoque', error);
-        alert(ERRO_SERVIDOR);
-      });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar o estoque:', error);
+    }
   };
 
   const columns = [
@@ -269,67 +279,76 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
   return (
     <Modal
       title="Produtos da Venda"
-      open={isModalVisible}
-      onCancel={handleCancelItens}
+      visible={isModalVisible}
+      onCancel={handleCancel}
       onOk={handleFinalizarVenda}
-      cancelText="Cancelar"
-      okText="Salvar"
     >
       <label htmlFor="produto">Produto:</label>
+      <Form.Item>
         <Controller
           name="produto"
           control={control}
           render={({ field }) => (
             <Select
-              showSearch
-              optionFilterProp="children"
+              {...field}
               style={{ width: '100%' }}
-              placeholder="Pesquisar produto..."
               onChange={(value) => {
-                const produtoSelecionado = opcoesProdutos.find(
-                  (produto) => produto.value == value
-                );
+                setSelectedProduct(value);
+                const produtoSelecionado = opcoesProdutos.find((produto) => produto.value === value);
                 if (produtoSelecionado) {
-                  setProdutoId(value);
                   setPrecoVenda(produtoSelecionado.preco.toString());
                   setCustoVendedor(produtoSelecionado.custo.toString());
-                  setPrecoVendaF(
-                    "R$ " + produtoSelecionado.preco.toFixed(2).replace(".", ",")
-                  );
-                  setCustoVendedorF(
-                    "R$ " + produtoSelecionado.custo.toFixed(2).replace(".", ",")
-                  );
                 } else {
                   setPrecoVenda("");
                   setCustoVendedor("");
-                  setPrecoVendaF("");
-                  setCustoVendedorF("");
                 }
               }}
-              onSearch={handleSearch}
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
             >
+              <Select.Option value="">Selecionar Produto</Select.Option>
               {opcoesProdutos.map((produto) => (
-                <Option key={produto.value} value={produto.value}>
+                <Select.Option key={produto.value} value={produto.value}>
                   {produto.label}
-                </Option>
+                </Select.Option>
               ))}
             </Select>
           )}
         />
+      </Form.Item>
 
       <div className="input-row-vendas">
         <label htmlFor="preco">Preço do Cliente:</label>
-        { precoVendaF }
+        <Controller
+          name="preco"
+          control={control}
+          render={({ field }) => (
+            <input
+              type="text"
+              id="preco"
+              placeholder="Digite o preço de venda (por unidade)"
+              {...field}
+              value={precoVenda}
+            />
+          )}
+        />
       </div>
 
       <div className="input-row-vendas">
-        <label htmlFor="preco">Custo do Vendedor:</label>
-        { custoVendedorF }
+        <label htmlFor="custo">Custo do Vendedor:</label>
+        <Controller
+          name="custo"
+          control={control}
+          render={({ field }) => (
+            <input
+              type="text"
+              id="custo"
+              placeholder="Digite o custo do produto (por unidade)"
+              {...field}
+              value={custoVendedor}
+            />
+          )}
+        />
       </div>
-    
+
       <div className="input-row-vendas">
         <label htmlFor="quantidade">Unidades Vendidas:</label>
         <Controller
@@ -341,16 +360,16 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
               id="quantidade"
               placeholder="Digite a quantidade vendida"
               {...field}
+              rules={[{ required: true, message: 'Por favor, insira a quantidade a ser vendida do produto!' }]}
             />
           )}
         />
       </div>
 
-      <Button onClick={handleCadastrarProduto}>Adicionar item</Button>
+      <Button onClick={handleCadastrarProduto}>Cadastrar Produto</Button>
       <Table
         dataSource={produtoTableData}
         columns={columns}
-        pagination={{ pageSize: 3 }}
       />
       <p>Aperte OK para finalizar a venda.</p>
     </Modal>
@@ -360,39 +379,67 @@ const ModalProdutos = ({ isModalVisible, handleCancel, opcoesProdutos, control, 
 // Componente Principal
 
 const Cadastro = () => {
-  const navigate = useNavigate();
   const { control, handleSubmit } = useForm();
   const [opcoesClientes, setOpcoesClientes] = useState([]);
   const [opcoesProdutos, setOpcoesProdutos] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [vendaId, setVendaId] = useState(null);
   const token = useSelector((state) => state.token)
-  
+
   const config = {
     headers: {
       'Authorization': 'Bearer ' + token
     }
   };
 
-  // Redirecionamento se não estiver logado
+  // redirecionamento se não estiver logado
+
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (!token) {
+      console.log("Login")
       return navigate("/login");
     }
   }, [token]);
 
-  // Quando abre a página, carrega clientes e produtos
+  const onSubmit = (data) => {
+    // console.log(data);
+    showModal();
+    criarVenda(data);
+  };
+
+  const criarVenda = (data) => {
+    if (data.cliente && data.pagamento && data.desconto && data.entrega && data.data) {
+      const novaVenda = {
+        data: {
+          cliente: data.cliente,
+          pagamento: data.pagamento,
+          desconto: data.desconto,
+          entrega: data.entrega,
+          data: data.data,
+        },
+      };
+
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas', novaVenda, config)
+        .then((response) => {
+          if (response.status === 200) {
+            console.log("Venda Cadastrada com Sucesso!");
+            console.log(response.data.data.id) // ID
+            setVendaId(response.data.data.id);
+          } else {
+            console.error('Erro de servidor:', response);
+          }
+        })
+        .catch((error) => {
+          console.error('Erro ao adicionar o cliente:', error);
+        });
+    }
+  };
+
   useEffect(() => {
-    carregaClientes();
-    carregaProdutos();    
-  }, []);
-
-  const limpaCampos = () => {
-    setVendaId(null);
-  }
-
-  const carregaClientes = () => {
-    axios.get(URL_CLIENTES_ORDENADOS, config)
+    // Get para opção de Clientes
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-clientes', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosClientes = response.data.data;
@@ -402,20 +449,18 @@ const Cadastro = () => {
               label: cliente.attributes.nome,
             };
           });
+          console.log(dadosProcessadosClientes);
           setOpcoesClientes(dadosProcessadosClientes);
         } else {
           console.error('Erro na resposta da API');
-          alert(ERRO_SERVIDOR);
         }
       })
       .catch((error) => {
         console.error('Erro ao fazer a chamada da API:', error);
-        alert(ERRO_SERVIDOR);
       });
-  }
 
-  const carregaProdutos = () => {
-    axios.get(URL_PRODUTOS_ORDENADOS, config)
+    // Get para Produtos
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosProdutos = response.data.data;
@@ -425,57 +470,19 @@ const Cadastro = () => {
               label: produto.attributes.descricao,
               preco: produto.attributes.preco,
               custo: produto.attributes.custo,
-              quantidade: produto.attributes.quantidade,
+              quantidadeloja: produto.attributes.quantidadeloja,
             };
           });
+          console.log(dadosProcessadosProdutos);
           setOpcoesProdutos(dadosProcessadosProdutos);
         } else {
           console.error('Erro na resposta da API de produtos');
-          alert(ERRO_SERVIDOR);
         }
       })
       .catch((error) => {
         console.error('Erro ao fazer a chamada da API de produtos:', error);
-        alert(ERRO_SERVIDOR);
       });
-  }
-
-  // Cadastra venda
-  const onSubmit = (data) => {
-    registrarVenda(data);
-  };
-
-  const registrarVenda = (data) => {
-    if (data.cliente && data.pagamento && data.desconto && data.entrega && data.data) {
-      const novaVenda = {
-        data: {
-          cliente: data.cliente,
-          pagamento: data.pagamento,
-          desconto: data.desconto.replace("R$ ","").replace(",","."),
-          entrega: data.entrega.replace("R$ ","").replace(",","."),
-          data: data.data,
-        },
-      };
-      console.log(novaVenda);
-
-      axios.post(baseUrlVendas, novaVenda, config)
-        .then((response) => {
-          if (response.status === 200) {
-            setVendaId(response.data.data.id);
-            showModal();
-          } else {
-            console.error('Erro de servidor:', response);
-            alert(ERRO_SERVIDOR);
-          }
-        })
-        .catch((error) => {
-          console.error('Erro ao adicionar o cliente:', error);
-          alert(ERRO_SERVIDOR);
-        });
-    } else {
-      alert(MSG_CAMPOS_OBRIGATORIOS);
-    }
-  };
+  }, []);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -487,45 +494,21 @@ const Cadastro = () => {
 
   const handleCancel = () => {
     if (vendaId) {
-      
-      let itensExcluidos = true;
-      axios.get(URL_ITENS_VENDA + vendaId, config)
-        .then( (response) => {
-          if (response.status === 200) {
-            const itens = response.data.data;
-            itens.forEach ( (item) => {
-              if (itensExcluidos) {
-                axios.delete(baseUrlItems + `/${item.id}`, config)
-                  .then( (response) => {
-                    if (response.status !== 200) {
-                      itensExcluidos = false;
-                    }
-                  })
-                  .catch( (error) => {
-                    itensExcluidos = false;
-                  });
-              }
-            })
-          }
-        })
-
       axios
-        .delete(baseUrlVendas + `/${vendaId}`, config)
+        .delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-vendas/${vendaId}`, config)
         .then((response) => {
           if (response.status === 200) {
-            hideModal();
-            return navigate("/relatorios");
+            setIsModalVisible(false);
+            console.log("Venda apagada com sucesso!");
           } else {
             console.error('Erro na resposta da API ao cancelar a venda');
-            alert(ERRO_SERVIDOR);
           }
         })
         .catch((error) => {
           console.error('Erro ao fazer a chamada da API para excluir a venda:', error);
-          alert(ERRO_SERVIDOR);
         });
     } else {
-      hideModal();
+      setIsModalVisible(false);
     }
   };
 
@@ -542,10 +525,7 @@ const Cadastro = () => {
                 name="cliente"
                 control={control}
                 render={({ field }) => (
-                  <select 
-                    id="cliente" 
-                    {...field}
-                  >
+                  <select id="cliente" {...field}>
                     <option value="">Selecionar Cliente</option>
                     {opcoesClientes.map((cliente) => (
                       <option key={cliente.value} value={cliente.value}>
@@ -564,6 +544,7 @@ const Cadastro = () => {
                 render={({ field }) => (
                   <select
                     id="pagamento"
+                    name="pagamento"
                     {...field}
                   >
                     <option value="">Selecionar Pagamento</option>
@@ -581,11 +562,8 @@ const Cadastro = () => {
                 name="desconto"
                 control={control}
                 render={({ field }) => (
-                  <NumericFormat
-                    thousandSeparator=""
-                    decimalSeparator=","
-                    prefix="R$ "
-                    decimalScale={2}
+                  <input
+                    type="text"
                     id="desconto"
                     placeholder="Digite o valor do desconto em R$"
                     {...field}
@@ -599,13 +577,10 @@ const Cadastro = () => {
                 name="entrega"
                 control={control}
                 render={({ field }) => (
-                  <NumericFormat
-                    thousandSeparator=""
-                    decimalSeparator=","
-                    prefix="R$ "
-                    decimalScale={2}
+                  <input
+                    type="text"
                     id="entrega"
-                    placeholder="Digite o valor da entrega em R$"
+                    placeholder="Digite o valor da entrega"
                     {...field}
                   />
                 )}
@@ -620,20 +595,18 @@ const Cadastro = () => {
                   <input
                     type="date"
                     id="data"
-                    min="2024-01-01"
-                    max="2050-12-31"
                     {...field}
                   />
                 )}
               />
             </div>
             <button type="submit">
-              Salvar
+              Criar Venda
             </button>
           </form>
         </div>
       </div>
-      <LinkRelatorios />
+      <MensagSucess />
       <ModalProdutos
         isModalVisible={isModalVisible}
         handleCancel={handleCancel}
@@ -641,11 +614,8 @@ const Cadastro = () => {
         onSubmit={onSubmit}
         control={control}
         venda={vendaId}
-        config={config}
         hideModal={hideModal}
-        carregaProdutos={carregaProdutos}
-        carregaClientes={carregaClientes}
-        limpaCampos={limpaCampos}
+        config={config}
       />
     </div>
   );

@@ -1,47 +1,38 @@
 import React, { useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import HeaderHome from '../components/HeaderHome';
+import { useNavigate } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import { definirToken } from '../redux/loginSlice';
-import HeaderHome from '../components/HeaderHome.jsx';
+
+// Botões de Redireciomaneto
 
 const Botoes = () => {
   return (
     <div className="button-container">
-      <Link className="button nova-venda" to="/vendas">
-        Vendas
-      </Link>
-      <Link className="button estoque" to="/estoque">
-        Estoque
-      </Link>
-      <Link className="button relatorio" to="/relatorios">
-        Relatórios
-      </Link>
-      <Link className="button clientes" to="/clientes">
-        Clientes
-      </Link>
+      <a className="button nova-venda" href="cadastro">Cadastrar Venda</a>
+      <a className="button estoque" href="estoque">Estoque</a>
+      <a className="button relatorio" href="vendas">Relatórios</a>
+      <a className="button clientes" href="clientes">Clientes</a>
     </div>
   );
 };
 
-const LinkSobreMobile = () => {
-  return <a className="button-sobre-mobile" href="/Gerenciamento-de-Estoque/#/sobre">Sobre</a>;
-};
+// Componente principal que será exportado por defaut
 
-const Home = () => {
+const Home = ({ history }) => {
   const token = useSelector((state) => state.token);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) {
-      console.log("Login");
+      console.log("Login")
       return navigate("/login");
     }
   }, [token]);
-
+  
   return (
     <main>
       <HeaderHome />
-      <LinkSobreMobile />
       <Botoes />
     </main>
   );

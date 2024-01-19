@@ -1,12 +1,6 @@
 body {
-  background: #92AD94;
+  background: #26413C;
   overflow: auto;
-}
-
-/* Torna visivel o botão de voltar do header */
-
-.header-toggle {
-  display: block;
 }
 
 /* Boltão de voltar a tela principal */
@@ -15,12 +9,13 @@ body {
   position: fixed;
   top: 1%;
   left: 1%;
-  color: #0e440f;
+  color: #cce5e5;
   font-size: 20px;
-  text-decoration: none;
+  text-decoration: none; /* Remover sublinhado do link */
 }
 
-/* Contaianer de Clientes */
+
+/* Contianer de Clientes */
 
 .container {
   position: absolute;
@@ -31,21 +26,23 @@ body {
   top: 5;
   left: 0;
   right: 0;
-  bottom: 10;
+  bottom: 15;
   z-index: 0;
   max-width: 85vw;
   margin: auto;
+  
 }
 
+/* Torna visivel o botão de voltar do header */
+
+.header-toggle {
+  display: block;
+}
 
 /* Estilos para telas menores (dispositivos móveis) */
 @media screen and (max-width: 800px) {
   body {
     align-items: flex-start;
-  }
-
-  .header {
-    display: none;
   }
   
   .container {
@@ -73,10 +70,11 @@ body {
 }
 
 
+
 /* /* Linhas de input */
 
 .input-container {
-  background-color: #989090;
+  background-color: #355f49;
   padding: 20px;
   margin-bottom: 20px;
   font-weight: bold;
@@ -85,6 +83,7 @@ body {
   align-items: center;
   margin-top: -200px;
   width: 300px;
+  border-radius: 10px;
 }
 
 .label {
@@ -98,7 +97,8 @@ body {
 }
 
 .input-row label {
-  width: 80px;
+  width: 85px;
+  color: #e5ffe5;
 }
 
 /* /* Confirmção */
@@ -121,19 +121,20 @@ body {
 /* /* Barra de pesquisa por nome */
 
 .barra-pesquisa {
-  background-color: #599768;
+  background-color: #3E505B;
   padding: 10px;
   margin-bottom: 10px;
   display: flex;
   align-items: center;
   border-radius: 5px;
+  color: #e5ffe5;
 }
 
 .barra-pesquisa input {
   margin-left: 10px;
   padding: 5px;
   border: none;
-  background-color: #ffffff;
+  background-color: #e7f7fd;
   border-radius: 3px;
 }
 
@@ -142,7 +143,7 @@ body {
 .cliente-lista {
   max-height: 200px;
   overflow-y: auto;
-  max-width: 800px;
+  max-width: 500px;
 }
 
 
@@ -156,31 +157,25 @@ body {
 }
 
 
-
 table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #599768;
+  background-color: #8AB0AB;
 }
 
 th, td {
   padding: 8px;
   text-align: left;
-  border-bottom: 1px solid #000000;
+  border-bottom: 1px solid #193330;
 }
 
 th {
-  background-color: #599768;
+  background-color: #8AB0AB;
 }
 
 tbody tr:hover {
-  background-color: #92c49e;
+  background-color: #3E505B;
 }
-
-.ant-table-content {
-  color: rgb(0, 0, 0);
-  font-weight: bold;
- }
 
 .titulo-container {
   font-size: 23px;

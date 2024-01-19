@@ -5,18 +5,18 @@ import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { Table, Button, Modal, Form, Input, Space, Select } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import { baseUrlEstoque, baseUrlCategorias } from '../util/constantes';
 import { useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
+
 
 // Botão de Voltar para Mobile
 
 const Bvoltar = () => {
   return (
-    <a className="bvoltar" href="/Gerenciamento-de-Estoque/#/">
-      <span>&#x2190;</span> Voltar
+    <a className="bvoltar" href="/">
+      <i className="fas fa-arrow-left"></i>🡸 Voltar
     </a>
-  );
+  )
 };
 
 // Formulário de input
@@ -24,14 +24,14 @@ const Bvoltar = () => {
 const InputForm = ({ onAdicionar, config }) => {
   const { control, handleSubmit, reset } = useForm();
   const [modalVisivel, setModalVisivel] = useState(false);
-  const [opcoesCategoria, setOpcoesCategoria] = useState([]);
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
+  const [opcoesCategoria, setOpcoesCategoria] = useState([]); // Keep only one declaration
 
   useEffect(() => {
-    axios.get(baseUrlCategorias, config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosCategoria = response.data.data;
+          console.log(dadosCategoria);
           let dadosProcessadosCategoria = dadosCategoria.map((categoria) => {
             return {
               value: categoria.id,
@@ -40,25 +40,23 @@ const InputForm = ({ onAdicionar, config }) => {
           });
           setOpcoesCategoria(dadosProcessadosCategoria);
         } else {
-          console.error('Erro na resposta da API do useEffect do Inputform:');
+          console.error('Erro na resposta da API');
         }
       })
       .catch((error) => {
-        console.error('Erro ao fazer a chamada da API do useEffect do Inputform:', error);
+        console.error('Erro ao fazer a chamada da API:', error);
       });
-  }, [config]);
+  }, []);
 
   const onSubmit = (data) => {
-    // Adicione a categoria ao objeto de dados
-    const dadosComCategoria = { ...data, categoria: categoriaSelecionada };
-    onAdicionar(dadosComCategoria);
+    onAdicionar(data);
     reset();
   };
 
   const abrirModalCategoria = () => {
     setModalVisivel(true);
   };
-  
+
   return (
     <div className="input-container">
       <div className="titulo-container">Produtos</div>
@@ -77,23 +75,19 @@ const InputForm = ({ onAdicionar, config }) => {
         <div className="input-row">
           <label htmlFor="categoria">Categoria:</label>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Select
-            showSearch
-            placeholder="Selecione"
-            optionFilterProp="children"
-            onChange={(value) => {
-              setCategoriaSelecionada(value);
-            }}
-            filterOption={(input, option) =>
-              option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-          >
-            {opcoesCategoria.map((item) => (
-              <Select.Option key={item.value} value={item.value}>
-                {item.label}
-              </Select.Option>
-            ))}
-          </Select>
+            <Controller
+              name="categoria"
+              control={control}
+              defaultValue=""
+              render={({ field }) => (
+                <select {...field}>
+                  <option value="">Selecionar</option>
+                  { opcoesCategoria.map( item => (
+                    <option value={item.value}>{item.label}</option>
+                  ) )}
+                </select>
+              )}
+            />
             <Button
               type="text"
               onClick={abrirModalCategoria}
@@ -131,25 +125,36 @@ const InputForm = ({ onAdicionar, config }) => {
           />
         </div>
         <div className="input-row">
-          <label htmlFor="quantidade">Quantidade:</label>
+          <label htmlFor="quantidadecasa">Quantidade em Casa:</label>
           <Controller
-            name="quantidade"
+            name="quantidadecasa"
             control={control}
             defaultValue=""
             render={({ field }) => (
-              <input type="text" {...field} placeholder="Digite a quantidade" />
+              <input type="text" {...field} placeholder="Digite a quantidade em estoque" />
             )}
           />
         </div>
+        <div className="input-row">
+          <label htmlFor="quantidadeloja">Quantidade em Loja:</label>
+          <Controller
+            name="quantidadeloja"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <input type="text" {...field} placeholder="Digite a quantidade em loja" />
+            )}
+          />
+        </div>
+
         <button id="adicionar" className="buttonc" type="submit">
           Adicionar Produto
         </button>
       </form>
       <CategoriaModal
-        open={modalVisivel}
+        visible={modalVisivel}
         onClose={() => setModalVisivel(false)}
         config={config}
-        setOpcoesCategoria={setOpcoesCategoria}
       />
     </div>
   );
@@ -157,17 +162,17 @@ const InputForm = ({ onAdicionar, config }) => {
 
 // Modal para Categoria
 
-const CategoriaModal = ({ open, onClose, config, setOpcoesCategoria }) => {
+const CategoriaModal = ({ visible, onClose, config, opcoesCategoria, setOpcoesCategoria }) => {
   const [categorias, setCategorias] = useState([]);
   const [novaCategoria, setNovaCategoria] = useState('');
 
   useEffect(() => {
     obterCategorias();
-  }, [open]);
+  }, [visible]);
 
   const obterCategorias = () => {
     // Fazer uma chamada GET à API para buscar as categorias
-    axios.get(baseUrlCategorias, config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosCategoria = response.data.data;
@@ -181,15 +186,14 @@ const CategoriaModal = ({ open, onClose, config, setOpcoesCategoria }) => {
           setCategorias(dadosProcessadosCategoria);
           setOpcoesCategoria([{ value: 'Selecione a Categoria', label: 'Selecione a Categoria' }, ...dadosProcessadosCategoria]);
         } else {
-          console.error('Erro na resposta da API das categorias');
+          console.error('Erro na resposta da API');
         }
       })
       .catch((error) => {
-        console.error('Erro ao fazer a chamada da API para obter as categorias:', error);
+        console.error('Erro ao fazer a chamada da API:', error);
       });
   };
 
-  // Função para adicionar uma categoria
   const adicionarCategoria = () => {
     if (novaCategoria) {
       const novaCategoriaData = {
@@ -198,7 +202,7 @@ const CategoriaModal = ({ open, onClose, config, setOpcoesCategoria }) => {
         },
       };
 
-      axios.post(baseUrlCategorias, novaCategoriaData, config)
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', novaCategoriaData, config)
         .then((response) => {
           if (response.status === 200) {
             obterCategorias();
@@ -218,14 +222,14 @@ const CategoriaModal = ({ open, onClose, config, setOpcoesCategoria }) => {
     console.log(categoriaId);
 
     // Fazer uma chamada à API para verificar se existem produtos relacionados
-    axios.get(baseUrlCategorias + `/${categoriaId}/?populate=produtos`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias/${categoriaId}/?populate=produtos`, config)
       .then((response) => {
         if (response.status === 200) {
           const produtosRelacionados = response.data.data.attributes.produtos.data;
           console.log('Produtos relacionados à categoria:', produtosRelacionados);
 
           if (produtosRelacionados.length > 0) {
-            // Se existe, impede o processo
+            //Se existe, erro
             alert('Não é possível excluir a categoria, pois existem produtos relacionados a ela.');
           } else {
             // Não existem, pode excluir
@@ -244,7 +248,7 @@ const CategoriaModal = ({ open, onClose, config, setOpcoesCategoria }) => {
   const confirmarExclusaoCategoria = (categoria) => {
     const confirmarExclusao = window.confirm(`Tem certeza de que deseja excluir a categoria: ${categoria.nome}?`);
     if (confirmarExclusao) {
-      axios.delete(baseUrlCategorias + `/${categoria.key}`, config)
+      axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias/${categoria.key}`, config)
         .then((response) => {
           if (response.status === 200) {
             obterCategorias();
@@ -287,7 +291,7 @@ const CategoriaModal = ({ open, onClose, config, setOpcoesCategoria }) => {
   return (
     <Modal
       title="Adicionar Categoria"
-      open={open}
+      visible={visible}
       onOk={() => {
         onClose(categorias);
         setCategorias([]);
@@ -315,13 +319,13 @@ const CategoriaModal = ({ open, onClose, config, setOpcoesCategoria }) => {
 
 // Modal de Edição de Produtos
 
-const EditarProdutoModal = ({ produto, open, onCancel, onSave, config }) => {
+const EditarProdutoModal = ({ produto, visible, onCancel, onSave, config }) => {
   const [form] = Form.useForm();
   const [selectedCategory, setSelectedCategory] = useState("");
   const [opcoesCategoria, setOpcoesCategoria] = useState([]);
 
   useEffect(() => {
-    axios.get(baseUrlCategorias, config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-categorias', config)
       .then((response) => {
         if (response.status === 200) {
           const dadosCategoria = response.data.data;
@@ -334,11 +338,11 @@ const EditarProdutoModal = ({ produto, open, onCancel, onSave, config }) => {
           });
           setOpcoesCategoria(dadosProcessadosCategoria);
         } else {
-          console.error('Erro na resposta da API das categorias');
+          console.error('Erro na resposta da API');
         }
       })
       .catch((error) => {
-        console.error('Erro ao fazer a chamada da API para receber as categorias:', error);
+        console.error('Erro ao fazer a chamada da API:', error);
       });
   }, []);
 
@@ -358,7 +362,7 @@ const EditarProdutoModal = ({ produto, open, onCancel, onSave, config }) => {
   return (
     <Modal
       title="Editar Produto"
-      open={open}
+      visible={visible}
       onCancel={onCancel}
       onOk={handleSave}
     >
@@ -376,9 +380,9 @@ const EditarProdutoModal = ({ produto, open, onCancel, onSave, config }) => {
           rules={[{ required: false, message: 'Por favor, insira a categoria do produto!' }]
         }
         >
-          <Select 
+          <Select
             defaultValue={selectedCategory}
-            onChange={(value) => setSelectedCategory(value)}
+            onChange={(e) => setSelectedCategory(e.target.value)}
           >
             { opcoesCategoria.map( item => (
               <option value={item.value}>{item.label}</option>
@@ -400,9 +404,16 @@ const EditarProdutoModal = ({ produto, open, onCancel, onSave, config }) => {
           <Input />
         </Form.Item>
         <Form.Item
-          name="quantidade"
-          label="Quantidade"
-          rules={[{ required: true, message: 'Por favor, insira a quantidade do produto!' }]}
+          name="quantidadecasa"
+          label="Em Estoque"
+          rules={[{ required: true, message: 'Por favor, insira a quantidade do produto no estoque!' }]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          name="quantidadeloja"
+          label="Em Casa"
+          rules={[{ required: true, message: 'Por favor, insira a quantidade do produto em casa!' }]}
         >
           <Input />
         </Form.Item>
@@ -429,7 +440,7 @@ const BarraPesquisa = ({ pesquisaNome, onPesquisaNomeChange, onPesquisar }) => {
   );
 };
 
-// Tabela com a lista de clientes 
+// Tabela com a lista de produtos 
 
 const ListaProdutos = ({ produtos, onEditarProduto, onExcluirProduto }) => {
   const columns = [
@@ -458,9 +469,15 @@ const ListaProdutos = ({ produtos, onEditarProduto, onExcluirProduto }) => {
       render: (text) => text || '---',
     },
     {
-      title: 'Quantidade',
-      dataIndex: 'quantidade',
-      key: 'quantidade',
+      title: 'Estoque',
+      dataIndex: 'quantidadecasa',
+      key: 'quantidadecasa',
+      render: (text) => text || '---',
+    },
+    {
+      title: 'Em Loja',
+      dataIndex: 'quantidadeloja',
+      key: 'quantidadeloja',
       render: (text) => text || '---',
     },
     {
@@ -482,7 +499,6 @@ const ListaProdutos = ({ produtos, onEditarProduto, onExcluirProduto }) => {
   return <Table columns={columns} dataSource={produtos} />;
 };
 
-
 ////// Componente Final
 
 const Estoque = () => {
@@ -497,15 +513,16 @@ const Estoque = () => {
   const [editarModalVisivel, setEditarModalVisivel] = useState(false);
   const [produtosFiltrados, setProdutosFiltrados] = useState([]);
   const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
+  
   const token = useSelector((state) => state.token)
 
   const config = {
      headers: {
        'Authorization': 'Bearer ' + token
      }
-   }; 
-  
-  useEffect(() => {
+   };  
+
+  useEffect(() => {    
     atualizaLista();
   }, []);
 
@@ -520,20 +537,27 @@ const Estoque = () => {
     }
   }, [token]);
 
+  ////
+  
+  useEffect(() => {
+    atualizaLista();
+  }, []);
+
   // Atualiza a tabela caso um comando seja executado
 
   function atualizaLista() {
-    axios.get(baseUrlEstoque + '/?populate=*', config)
+    axios.get('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos?populate=*', config)
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status == 200) {
           const dados = response.data.data;
-          console.log("Produtos recebidos:", dados);
+          console.log(dados);
           let dadosProcessados = dados.map((produto) => {
             return {
               key: produto.id,
               descricao: produto.attributes.descricao,
               categoria: produto.attributes.categoria.data.attributes.nome,
-              quantidade: produto.attributes.quantidade,
+              quantidadecasa: produto.attributes.quantidadecasa,
+              quantidadeloja: produto.attributes.quantidadeloja,
               custo: produto.attributes.custo.toFixed(2),
               preco: produto.attributes.preco.toFixed(2),
             }
@@ -542,14 +566,11 @@ const Estoque = () => {
           setProdutosOriginal(dadosProcessados);
           setProdutosFiltrados(dadosProcessados);
         } else {
-          console.log("TOKEN: ", config);
-          console.log("STATUS: ", response.status);
           alert("Houve um erro na conexão com o servidor!")
         }
       })
       .catch((error) => {
-        console.log("Erro ao pegar a lista: ", error);
-        console.log("TOKEN: ", config);
+        console.log(error)
         alert("Houve um erro na conexão com o servidor!")
       });
   }
@@ -562,25 +583,24 @@ const Estoque = () => {
     setEditarModalVisivel(true);
   };
 
-  // Função para adicionar um produto
+  // Função para adicionar produto
 
   const adicionarProduto = (data) => {
-    if (data.descricao && data.quantidade && data.custo && data.preco) {
+    if (data.descricao && data.quantidadecasa && data.quantidadeloja && data.custo && data.preco) {
       const novoProduto = {
         data: {
           descricao: data.descricao,
           categoria: data.categoria,
-          quantidade: data.quantidade,
+          quantidadecasa: data.quantidadecasa,
+          quantidadeloja: data.quantidadeloja,
           custo: data.custo,
           preco: data.preco,
         },
       };
 
-      axios.post(baseUrlEstoque, novoProduto, config)
+      axios.post('https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos', novoProduto, config)
         .then((response) => {
           if (response.status === 200) {
-            console.log("novo Produto: ", novoProduto);
-            alert("Produto adicionado com sucesso!");
             atualizaLista();
           } else {
             console.error('Erro de servidor:', response);
@@ -606,8 +626,11 @@ const Estoque = () => {
     if (produtoEditado.categoria && typeof produtoEditado.categoria !== 'string') {
       camposEditados.categoria = produtoEditado.categoria;
     }
-    if (produtoEditado.quantidade) {
-      camposEditados.quantidade = produtoEditado.quantidade;
+    if (produtoEditado.quantidadecasa) {
+      camposEditados.quantidadecasa = produtoEditado.quantidadecasa;
+    }
+    if (produtoEditado.quantidadeloja) {
+      camposEditados.quantidadeloja = produtoEditado.quantidadeloja;
     }
     if (produtoEditado.preco) {
       camposEditados.preco = produtoEditado.preco;
@@ -616,7 +639,7 @@ const Estoque = () => {
       camposEditados.custo = produtoEditado.custo;
     }
 
-    axios.put(baseUrlEstoque + `/${novosProdutos[produtoEditando].key}`, { data: camposEditados }, config)
+    axios.put(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${novosProdutos[produtoEditando].key}`, { data: camposEditados }, config)
       .then((response) => {
         if (response.status === 200) {
           setProdutos(novosProdutos);
@@ -637,11 +660,11 @@ const Estoque = () => {
     console.log(produtoId);
 
     // Fazer uma chamada à API para verificar se existem item vendas relacionados ao produto
-    axios.get(baseUrlEstoque + `/${produtoId}/?populate=*`, config)
+    axios.get(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}/?populate=*`, config)
       .then((response) => {
         if (response.status === 200) {
           const produtoExcluidoNome = response.data.data.attributes.descricao;
-          const vendasRelacionadas = response.data.data.attributes.itens_venda.data;
+          const vendasRelacionadas = response.data.data.attributes.item_vendas.data;
           console.log('Produtos relacionados à categoria:', vendasRelacionadas);
 
           if (vendasRelacionadas .length > 0) {
@@ -664,7 +687,7 @@ const Estoque = () => {
   const confirmarExclusaoProduto = (produtoId, produtoExcluidoNome) => {
     const confirmarExclusao = window.confirm(`Tem certeza de que deseja excluir o produto: ${produtoExcluidoNome}?`);
     if (confirmarExclusao) {
-      axios.delete(baseUrlEstoque + `/${produtoId}`, config)
+      axios.delete(`https://ideacao-backend-8ea0b764c21a.herokuapp.com/api/decor-produtos/${produtoId}`, config)
         .then((response) => {
           if (response.status === 200) {
               atualizaLista();
@@ -716,13 +739,13 @@ const Estoque = () => {
         />
         <EditarProdutoModal
           produto={produtos[produtoEditando]}
-          open={editarModalVisivel}
+          visible={editarModalVisivel}
           onCancel={() => setEditarModalVisivel(false)}
+          config={config}
           onSave={(produtoEditado) => {
             editarProduto(produtoEditado, produtoEditando);
             setEditarModalVisivel(false);
           }}
-          config={config}
         />
       </div>
     </div>
