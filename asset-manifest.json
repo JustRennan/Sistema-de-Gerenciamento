@@ -1,18 +1,21 @@
 {
   "files": {
-    "main.css": "/Sistema-de-Gerenciamento/static/css/main.0491fc7f.css",
-    "main.js": "/Sistema-de-Gerenciamento/static/js/main.f44e386a.js",
-    "static/css/58.dba5edfd.chunk.css": "/Sistema-de-Gerenciamento/static/css/58.dba5edfd.chunk.css",
-    "static/js/58.9207bcc5.chunk.js": "/Sistema-de-Gerenciamento/static/js/58.9207bcc5.chunk.js",
-    "static/media/login.png": "/Sistema-de-Gerenciamento/static/media/login.509da15bc18266d017eb.png",
+    "main.css": "/Sistema-de-Gerenciamento/static/css/main.5822ee5f.css",
+    "main.js": "/Sistema-de-Gerenciamento/static/js/main.39cbe77b.js",
+    "static/js/787.24f3d81a.chunk.js": "/Sistema-de-Gerenciamento/static/js/787.24f3d81a.chunk.js",
+    "static/media/Cadastro.png": "/Sistema-de-Gerenciamento/static/media/Cadastro.a2b2e287442571f6e07d.png",
+    "static/media/Vendas.png": "/Sistema-de-Gerenciamento/static/media/Vendas.04571300790e77533074.png",
+    "static/media/Estoque.png": "/Sistema-de-Gerenciamento/static/media/Estoque.b0d5b8392cf562c1c528.png",
+    "static/media/Clientes.png": "/Sistema-de-Gerenciamento/static/media/Clientes.625680210ac2214803e3.png",
+    "static/media/iconeifpb.png": "/Sistema-de-Gerenciamento/static/media/iconeifpb.fd8d3854753c68df0933.png",
+    "static/media/iconelogin.png": "/Sistema-de-Gerenciamento/static/media/iconelogin.509da15bc18266d017eb.png",
     "index.html": "/Sistema-de-Gerenciamento/index.html",
-    "main.0491fc7f.css.map": "/Sistema-de-Gerenciamento/static/css/main.0491fc7f.css.map",
-    "main.f44e386a.js.map": "/Sistema-de-Gerenciamento/static/js/main.f44e386a.js.map",
-    "58.dba5edfd.chunk.css.map": "/Sistema-de-Gerenciamento/static/css/58.dba5edfd.chunk.css.map",
-    "58.9207bcc5.chunk.js.map": "/Sistema-de-Gerenciamento/static/js/58.9207bcc5.chunk.js.map"
+    "main.5822ee5f.css.map": "/Sistema-de-Gerenciamento/static/css/main.5822ee5f.css.map",
+    "main.39cbe77b.js.map": "/Sistema-de-Gerenciamento/static/js/main.39cbe77b.js.map",
+    "787.24f3d81a.chunk.js.map": "/Sistema-de-Gerenciamento/static/js/787.24f3d81a.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.0491fc7f.css",
-    "static/js/main.f44e386a.js"
+    "static/css/main.5822ee5f.css",
+    "static/js/main.39cbe77b.js"
   ]
 }
